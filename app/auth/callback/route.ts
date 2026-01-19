@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   
   // 'next' is where we want to send the user after successful login
   // Defaults to '/' if not provided
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = searchParams.get('next') ?? '/profile'
 
   if (code) {
     const supabase = await createClient()
