@@ -2,6 +2,7 @@
 
 import { createClient } from "@/app/lib/supabase/server";
 import { LoginInput, loginSchema, SignupInput, signupSchema } from "@/app/schemas/auth.schema";
+import { revalidatePath } from "next/cache";
 
 const validateAuthData = (
   type: "login" | "signup",
@@ -38,7 +39,8 @@ export const signIn = async (data: LoginInput) => {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if(error) return { error: error.message }
-    return { success: "Successfully signed in!" }
+    revalidatePath("/");
+    return { success: true, message: "Successfully signed in." }
 }
 
 export const signUp = async (data: SignupInput) => {
@@ -53,7 +55,11 @@ export const signUp = async (data: SignupInput) => {
     const { email, password } = validatedData; 
 
     const supabase = await createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ email, password,
+        options: {
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+        }
+     });
     if(error) return { error: error.message }
-    return { success: "Successfully signed up! Please check your email to verify your account." }
+    return { success: true, message: "Please check your email to verify your account." }
 }
