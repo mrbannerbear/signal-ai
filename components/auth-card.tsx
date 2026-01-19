@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -29,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
 
 interface AuthCardProps {
   onSignIn: (
@@ -37,9 +37,14 @@ interface AuthCardProps {
   onSignUp: (
     values: SignupInput,
   ) => Promise<{ error?: string; success?: boolean }>;
+  onGoogleSignIn: () => Promise<{ error?: string; url?: string }>;
 }
 
-export default function AuthCard({ onSignIn, onSignUp }: AuthCardProps) {
+export default function AuthCard({
+  onSignIn,
+  onSignUp,
+  onGoogleSignIn,
+}: AuthCardProps) {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -67,7 +72,7 @@ export default function AuthCard({ onSignIn, onSignUp }: AuthCardProps) {
         mode === "login"
           ? await onSignIn({ email: values.email, password: values.password })
           : await onSignUp(values);
-          console.log("AuthCard onSubmit result:", result);
+      console.log("AuthCard onSubmit result:", result);
 
       if (result?.error) {
         setStatus({ type: "error", message: result.error });
@@ -77,6 +82,15 @@ export default function AuthCard({ onSignIn, onSignUp }: AuthCardProps) {
         } else {
           router.push("/");
         }
+      }
+    });
+  };
+
+  const handleGoogleSignIn = async () => {
+    startTransition(async () => {
+      const result = await onGoogleSignIn();
+      if (result?.error) {
+        setStatus({ type: "error", message: result.error });
       }
     });
   };
@@ -226,6 +240,31 @@ export default function AuthCard({ onSignIn, onSignUp }: AuthCardProps) {
                       {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full"
+                    onClick={handleGoogleSignIn}
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <FcGoogle className="mr-2 h-4 w-4" />
+                    )}
+                    Google
+                  </Button>
                 </Form>
 
                 <div className="mt-6 text-center text-sm">
