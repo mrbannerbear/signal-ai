@@ -1,18 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-
-const getEnvVariables = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables",
-    );
-  }
-
-  return { supabaseUrl, supabaseKey };
-};
+import { getEnvVariables } from "@/app/utils/getEnv";
 
 export async function createClient() {
   const cookieStore = await cookies();
