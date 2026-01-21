@@ -38,6 +38,7 @@ export const createJob = async (values: Job): Promise<ActionResponse> => {
   const { data, error } = await supabase
     .from("jobs")
     .insert({
+        user_id: user.id,
       ...valuesToInsert,
     })
     .select()
@@ -46,7 +47,7 @@ export const createJob = async (values: Job): Promise<ActionResponse> => {
   if (error || !data) {
     return {
       success: false,
-      message: "Failed to create job",
+      message: error?.message || "Failed to create job",
     };
   }
 
