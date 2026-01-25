@@ -38,7 +38,7 @@ export const createJob = async (values: Job): Promise<ActionResponse> => {
   const { data, error } = await supabase
     .from("jobs")
     .insert({
-        user_id: user.id,
+      user_id: user.id,
       ...valuesToInsert,
     })
     .select()
@@ -55,5 +55,45 @@ export const createJob = async (values: Job): Promise<ActionResponse> => {
     success: true,
     message: "Job created successfully",
     id: data.id,
+  };
+};
+
+export const getAllJobs = async (page: number = 1, pageSize: number = 9) => {
+  const supabase = await createClient();
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, error, count } = await supabase
+    .from("jobs")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) throw new Error(error.message);
+
+  return {
+    jobs: data || [],
+    totalCount: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize),
+  };
+};
+
+export const getJobById = async (id: string) => {
+  const supabase = await createClient();
+
+  // Fetch Job and Profile in parallel
+  const [jobRes, profileRes] = await Promise.all([
+    supabase.from("jobs").select("*").eq("id", id).single(),
+    supabase.from("profiles").select("*").single(), // Assuming one profile per user
+  ]);
+
+  if (jobRes.error || !jobRes.data) throw new Error(
+    "Error fetching job."
+  );
+
+  return {
+    job: jobRes.data,
+    profile: profileRes.data,
   };
 };
