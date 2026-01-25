@@ -23,7 +23,7 @@ export const jobSchema = z.object({
     .min(10, "Requirements must be at least 10 characters long"),
   skills: z.array(z.string()).min(1, "At least one skill is required"),
   other_benefits: z.string().optional(),
-  posted_date: z.coerce.date().optional(),
+  posted_date: z.string().optional(),
 });
 
 export type Job = z.infer<typeof jobSchema>;
