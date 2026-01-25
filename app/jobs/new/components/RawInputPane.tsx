@@ -10,9 +10,27 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, MousePointerClick } from "lucide-react";
+import { formatJobData } from "@/app/actions/jobFormat";
+import { Job } from "@/app/schemas/jobs.schema";
 
-export function RawInputPane() {
+export function RawInputPane({
+  setStructuredData
+}: {
+  setStructuredData: (data: Job) => void;
+}) {
   const [hasContent, setHasContent] = useState(false);
+  const [rawText, setRawText] = useState<string>("");
+
+    const onSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      try {
+        const jobText = await formatJobData(rawText);
+        console.log("Fetched Job Text:", jobText);
+        setStructuredData(jobText);
+      } catch (error) {
+          console.error("Error fetching job text:", error);
+      }
+    }
 
   return (
     <div className="flex flex-col space-y-3 min-h-75 lg:min-h-0">
@@ -45,7 +63,10 @@ export function RawInputPane() {
 
       <div className="relative flex-1 group">
         <Textarea
-          onChange={(e) => setHasContent(e.target.value.length > 0)}
+          onChange={(e) => {
+            setHasContent(e.target.value.length > 0);
+            setRawText(e.target.value);
+          }}
           placeholder=""
           className="h-full p-6 resize-none bg-muted/20 border-dashed border-2 rounded-[2rem] focus-visible:ring-1 transition-all text-sm md:text-base leading-relaxed"
         />
@@ -58,6 +79,10 @@ export function RawInputPane() {
           </div>
         )}
       </div>
+
+      <button 
+        onClick={onSubmit}
+      >Analyze</button>
     </div>
   );
 }

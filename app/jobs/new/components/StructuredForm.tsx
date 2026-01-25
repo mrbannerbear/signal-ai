@@ -31,27 +31,35 @@ import { Job, jobSchema } from "@/app/schemas/jobs.schema";
 import { createJob } from "@/app/actions/jobs";
 import { useRouter } from "next/navigation";
 
-export function StructuredForm() {
+export function StructuredForm({
+  structuredData,
+}: {
+  structuredData: Job | null;
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
+  // Define defaults derived straight from props
+  const defaultJobValues = {
+    title: structuredData?.title || "",
+    company: structuredData?.company || "",
+    company_description: structuredData?.company_description || "",
+    location: structuredData?.location || "",
+    employment_type: structuredData?.employment_type || "Full-time",
+    experience_level: structuredData?.experience_level || "Mid",
+    compensation: structuredData?.compensation || "",
+    description: structuredData?.description || "",
+    responsibilities: structuredData?.responsibilities || "",
+    requirements: structuredData?.requirements || "",
+    skills: structuredData?.skills || ([] as string[]),
+    other_benefits: structuredData?.other_benefits || "",
+    posted_date:
+      structuredData?.posted_date || new Date().toISOString().split("T")[0],
+  };
+
+  const form = useForm<Job>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(jobSchema) as any,
-    defaultValues: {
-      title: "",
-      company: "",
-      company_description: "",
-      location: "",
-      employment_type: "Full-time" as const,
-      experience_level: "Mid" as const,
-      compensation: "",
-      description: "",
-      responsibilities: "",
-      requirements: "",
-      skills: [] as string[],
-      other_benefits: "",
-      posted_date: new Date(),
-    },
+    defaultValues: defaultJobValues,
   });
 
   const [skillInput, setSkillInput] = useState("");
@@ -206,7 +214,8 @@ export function StructuredForm() {
                           type="date"
                           className="border-none bg-muted/40 h-11 px-4 rounded-xl focus:bg-muted/60"
                           value={
-                            field.value
+                            field.value &&
+                            !isNaN(new Date(field.value).getTime())
                               ? new Date(field.value)
                                   .toISOString()
                                   .split("T")[0]
