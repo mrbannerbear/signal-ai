@@ -6,60 +6,47 @@ import { profileSchema } from "../schemas/profiles.schema";
 import { mapDbToProfile, mapProfileToDb } from "../utils/mapToDb";
 import { redirect } from "next/navigation";
 
-export async function updateProfileAction(
-  profileId: string,
-  formData: unknown,
-) {
+export async function updateProfileAction(profileId: string, formData: unknown) {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, message: "Unauthorized" };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("user_id")
-    .eq("id", profileId)
-    .single();
-
-  if (!profile || profile.user_id !== user.id) {
-    return {
-      success: false,
-      message: "Forbidden: You do not own this profile",
-    };
-  }
+  // Owner check
+  const { data: profile } = await supabase.from("profiles").select("user_id").eq("id", profileId).single();
+  if (!profile || profile.user_id !== user.id) return { success: false, message: "Forbidden" };
 
   const validated = profileSchema.safeParse(formData);
-  if (!validated.success) {
-    return { success: false, errors: validated.error.flatten().fieldErrors };
-  }
+  if (!validated.success) return { success: false, errors: validated.error.flatten().fieldErrors };
 
   const dbData = mapProfileToDb(validated.data, profileId);
 
   try {
-    const { error: pError } = await supabase
-      .from("profiles")
-      .update(dbData.profile)
-      .eq("id", profileId);
+    const { error: pError } = await supabase.from("profiles").update(dbData.profile).eq("id", profileId);
     if (pError) throw pError;
 
+    // Clean sync for related tables
     await Promise.all([
       supabase.from("experience").delete().eq("profile_id", profileId),
       supabase.from("education").delete().eq("profile_id", profileId),
     ]);
 
-    const [expRes, eduRes] = await Promise.all([
-      supabase.from("experience").insert(dbData.experience),
-      supabase.from("education").insert(dbData.education),
-    ]);
+    console.log(
+      "dbdata",
+      dbData);
 
-    if (expRes.error) throw expRes.error;
-    if (eduRes.error) throw eduRes.error;
+  if (dbData.experience?.length) {
+      const { error: expError } = await supabase.from("experience").insert(dbData.experience);
+      if (expError) throw expError;
+    }
+    if (dbData.education?.length) {
+      const { error: eduError } = await supabase.from("education").insert(dbData.education);
+      if (eduError) throw eduError;
+    }
 
     revalidatePath("/profile");
+
     return { success: true };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return { success: false, message: error.message };
   }
@@ -67,15 +54,13 @@ export async function updateProfileAction(
 
 export async function createProfileAction(formData: unknown) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, message: "Unauthorized" };
 
   const validated = profileSchema.safeParse(formData);
-  if (!validated.success)
-    return { success: false, errors: validated.error.flatten().fieldErrors };
+  if (!validated.success) return { success: false, errors: validated.error.flatten().fieldErrors };
 
+  let newId = "";
   try {
     const { data: newProfile, error: pError } = await supabase
       .from("profiles")
@@ -84,19 +69,26 @@ export async function createProfileAction(formData: unknown) {
       .single();
 
     if (pError) throw pError;
+    newId = newProfile.id;
 
-    const dbData = mapProfileToDb(validated.data, newProfile.id);
-    await Promise.all([
-      supabase.from("experience").insert(dbData.experience),
-      supabase.from("education").insert(dbData.education),
-    ]);
+    const dbData = mapProfileToDb(validated.data, newId);
+    
+  if (dbData.experience?.length) {
+      const { error: expError } = await supabase.from("experience").insert(dbData.experience);
+      if (expError) throw expError;
+    }
+    if (dbData.education?.length) {
+      const { error: eduError } = await supabase.from("education").insert(dbData.education);
+      if (eduError) throw eduError;
+    }
 
     revalidatePath("/profile");
-    return { success: true, id: newProfile.id };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return { success: false, message: error.message };
   }
+
+  return { success: true };
 }
 
 export async function getProfile() {
