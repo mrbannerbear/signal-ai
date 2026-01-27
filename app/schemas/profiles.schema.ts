@@ -6,10 +6,13 @@ export const experienceSchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
   role: z.string().min(2, "Job title/role is required"),
   location: z.string().optional().or(z.literal("")),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date().optional().nullable(),
+  startDate: z.date({
+    error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+  }),
+  endDate: z.date().optional().nullable(),
+  isCurrent: z.boolean().default(false),
+  description: z.string().optional(),
   position: z.number().int().default(0),
-  description: z.string().min(10, "Please provide a brief description of your impact"),
 });
 
 export const educationSchema = z.object({
@@ -26,15 +29,22 @@ export const profileSchema = z.object({
   id: z.uuid().optional(),
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
-  headline: z.string().min(5, "A professional headline is highly recommended").max(100),
+  headline: z
+    .string()
+    .min(5, "A professional headline is highly recommended")
+    .max(100),
   bio: z.string().min(20, "A short bio helps AI matching").max(2000),
-  
-  skills: z.array(
-    z.object({
-      name: z.string(),
-      level: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]).optional(),
-    })
-  ).min(1, "Add at least one skill to your profile"),
+
+  skills: z
+    .array(
+      z.object({
+        name: z.string(),
+        level: z
+          .enum(["Beginner", "Intermediate", "Advanced", "Expert"])
+          .optional(),
+      }),
+    )
+    .min(1, "Add at least one skill to your profile"),
 
   location: z.string().optional().or(z.literal("")),
   portfolioUrl: z.url("Invalid portfolio URL").optional().or(z.literal("")),
