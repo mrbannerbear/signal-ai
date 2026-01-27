@@ -1,4 +1,4 @@
-import { getJobById } from "@/app/actions/jobs";
+import { createClient } from "@/app/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@radix-ui/react-separator";
@@ -6,7 +6,21 @@ import { Badge, Check, ExternalLink, MapPin } from "lucide-react";
 import Link from "next/link";
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
-  const { job, profile } = await getJobById(params.id);
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const [jobRes, profileRes] = await Promise.all([
+    supabase.from("jobs").select("*").eq("id", id).single(),
+    user 
+      ? supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle() 
+      : Promise.resolve({ data: null })
+  ]);
+
+  if (jobRes.error || !jobRes.data) throw new Error("Job not found");
+  
+  const job = jobRes.data;
+  const profile = profileRes?.data;
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
