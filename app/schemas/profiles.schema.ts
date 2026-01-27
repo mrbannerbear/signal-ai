@@ -1,15 +1,14 @@
 import { z } from "zod";
 
-// Experience Schema: Validates a single workplace entry
 export const experienceSchema = z.object({
   id: z.uuid().optional(),
   companyName: z.string().min(2, "Company name is required"),
   role: z.string().min(2, "Job title/role is required"),
-  location: z.string().optional().or(z.literal("")),
-  startDate: z.date({
+  location: z.string().optional().nullable(),
+  startDate: z.coerce.date({
     error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
   }),
-  endDate: z.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
   isCurrent: z.boolean().default(false),
   description: z.string().optional(),
   position: z.number().int().default(0),

@@ -2,7 +2,13 @@
 
 import { useFieldArray, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,13 +16,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2 } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function ExperienceSection({ control } : { control: any }) {
+export function ExperienceSection({ control }: { control: any }) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "experience",
   });
 
-  // Watch values to handle the "isCurrent" disabled state
   const watchedExperience = useWatch({ control, name: "experience" });
 
   return (
@@ -27,14 +32,17 @@ export function ExperienceSection({ control } : { control: any }) {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => append({
-            companyName: "",
-            role: "",
-            startDate: new Date(),
-            endDate: null,
-            isCurrent: false,
-            description: "",
-          })}
+          onClick={() =>
+            append({
+              companyName: "",
+              role: "",
+              startDate: new Date(),
+              endDate: null,
+              isCurrent: false,
+              description: "",
+              location: "",
+            })
+          }
         >
           <Plus className="w-4 h-4 mr-2" /> Add Position
         </Button>
@@ -45,7 +53,10 @@ export function ExperienceSection({ control } : { control: any }) {
           const isCurrent = watchedExperience?.[index]?.isCurrent;
 
           return (
-            <Card key={field.id} className="relative border-muted-foreground/20">
+            <Card
+              key={field.id}
+              className="relative border-muted-foreground/20"
+            >
               <Button
                 type="button"
                 variant="ghost"
@@ -58,59 +69,127 @@ export function ExperienceSection({ control } : { control: any }) {
 
               <CardContent className="p-6 grid gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField control={control} name={`experience.${index}.companyName`} render={({ field }) => (
-                    <FormItem><FormLabel>Company</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                  )} />
-                  <FormField control={control} name={`experience.${index}.role`} render={({ field }) => (
-                    <FormItem><FormLabel>Role</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                  )} />
+                  <FormField
+                    control={control}
+                    name={`experience.${index}.companyName`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`experience.${index}.role`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
-                  <FormField control={control} name={`experience.${index}.startDate`} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Date*</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} 
-                          value={field.value instanceof Date ? field.value.toISOString().split("T")[0] : ""}
-                          onChange={(e) => field.onChange(e.target.valueAsDate)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  <FormField
+                    control={control}
+                    name={`experience.${index}.startDate`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date*</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            {...field}
+                            value={
+                              field.value instanceof Date
+                                ? field.value.toISOString().split("T")[0]
+                                : ""
+                            }
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsDate)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <FormField control={control} name={`experience.${index}.endDate`} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className={isCurrent ? "opacity-50" : ""}>End Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} disabled={isCurrent}
-                          value={!isCurrent && field.value instanceof Date ? field.value.toISOString().split("T")[0] : ""}
-                          onChange={(e) => field.onChange(e.target.valueAsDate)}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )} />
+                  <FormField
+                    control={control}
+                    name={`experience.${index}.endDate`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={isCurrent ? "opacity-30" : ""}>
+                          End Date
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            {...field}
+                            disabled={isCurrent}
+                            className={
+                              isCurrent ? "bg-muted cursor-not-allowed" : ""
+                            }
+                            value={
+                              !isCurrent && field.value instanceof Date
+                                ? field.value.toISOString().split("T")[0]
+                                : ""
+                            }
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsDate)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <FormField control={control} name={`experience.${index}.isCurrent`} render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2 space-y-0 pb-3">
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (checked) control.register(`experience.${index}.endDate`).onChange(null);
-                        }} />
-                      </FormControl>
-                      <FormLabel className="text-sm font-medium">Present</FormLabel>
-                    </FormItem>
-                  )} />
+                  <FormField
+                    control={control}
+                    name={`experience.${index}.isCurrent`}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                              if (checked) {
+                                control
+                                  .register(`experience.${index}.endDate`)
+                                  .onChange(null);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-medium">
+                          Present
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
-                <FormField control={control} name={`experience.${index}.description`} render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl><Textarea {...field} className="min-h-24" /></FormControl>
-                  </FormItem>
-                )} />
+                <FormField
+                  control={control}
+                  name={`experience.${index}.description`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} className="min-h-24" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
           );

@@ -38,6 +38,7 @@ export function ProfileForm({ initialData } : { initialData?: Profile }) {
   });
 
   async function onSubmit(values: Profile) {
+    console.log(values)
     startTransition(async () => {
       const result = initialData?.id 
         ? await updateProfileAction(initialData.id, values)
@@ -45,7 +46,7 @@ export function ProfileForm({ initialData } : { initialData?: Profile }) {
 
       if (result.success) {
         toast.success("Profile saved!");
-        router.push("/dashboard/jobs");
+        // router.push("/dashboard/jobs");
         router.refresh();
       } else {
         toast.error(result.message || "Failed to save profile");
@@ -54,9 +55,28 @@ export function ProfileForm({ initialData } : { initialData?: Profile }) {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function findNullPaths(obj: any, path: string[] = []): string[] {
+  if (obj === null) return [path.join(".") || "(root)"];
+  if (Array.isArray(obj)) {
+    return obj.flatMap((v, i) => findNullPaths(v, [...path, String(i)]));
+  }
+  if (typeof obj === "object" && obj) {
+    return Object.entries(obj).flatMap(([k, v]) => findNullPaths(v, [...path, k]));
+  }
+  return [];
+}
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function onInvalid(errors: any) {
+  console.log("Form errors (raw):", errors);
+  console.log("Null paths:", findNullPaths(form.getValues()));
+  toast.error("Please fix the errors in the form.");
+}
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10 pb-10">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-10 pb-10">
         
         {/* IDENTITY */}
         <div className="grid gap-6 p-8 border rounded-3xl bg-card shadow-sm">
