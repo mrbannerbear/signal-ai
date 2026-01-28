@@ -4,6 +4,7 @@ import "./globals.css";
 import { createClient } from "./lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
+import DashboardLayout from "@/components/shared/DashboardLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +47,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <DashboardLayout>{children}</DashboardLayout>
         <Toaster />
       </body>
     </html>
