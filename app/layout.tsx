@@ -30,7 +30,7 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/auth");
 
   // Check if this specific user has a profile record
   const { data: profile } = await supabase

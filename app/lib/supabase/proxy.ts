@@ -29,21 +29,24 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data } = await supabase.auth.getClaims();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const user = data?.claims;
+  const path = request.nextUrl.pathname;
 
-  const publicRoutes = ["/auth"];
-  const isPublicRoute = publicRoutes.some(
-    (route) =>
-      request.nextUrl.pathname === route ||
-      request.nextUrl.pathname.startsWith(route),
-  );
-
+  const isAuthRoute = path.startsWith("/auth");
+  const isRootRoute = path === "/";
+  const isPublicRoute = isAuthRoute || isRootRoute;
   if (!user && !isPublicRoute) {
-    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isAuthRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard"; 
     return NextResponse.redirect(url);
   }
 
