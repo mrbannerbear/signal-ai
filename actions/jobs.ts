@@ -1,6 +1,7 @@
 "use server";
-import { createClient } from "../lib/supabase/server";
-import { Job, jobSchema } from "../schemas/jobs.schema";
+
+import { createClient } from "@/app/lib/supabase/server";
+import { Job, jobSchema } from "@/schemas/jobs.schema";
 
 export type ActionResponse = {
   success: boolean;

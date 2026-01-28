@@ -1,0 +1,2 @@
+ALTER TABLE experience
+ADD COLUMN is_current BOOLEAN DEFAULT FALSE;

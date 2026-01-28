@@ -27,8 +27,8 @@ import {
   X,
   Plus,
 } from "lucide-react";
-import { Job, jobSchema } from "@/app/schemas/jobs.schema";
-import { createJob } from "@/app/actions/jobs";
+import { Job, jobSchema } from "@/schemas/jobs.schema";
+import { createJob } from "@/actions/jobs";
 import { useRouter } from "next/navigation";
 
 export function StructuredForm({
@@ -88,7 +88,7 @@ export function StructuredForm({
     try {
       const result = await createJob(values);
       if (result.success) {
-        router.push(`/jobs/${result.id}`);
+        router.push(`/dashboard/jobs/${result.id}`);
       } else {
         if (result.errors) {
           Object.entries(result.errors).forEach(([field, messages]) => {
