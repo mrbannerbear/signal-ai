@@ -2,7 +2,7 @@
 
 import { Resolver, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { profileSchema, type Profile } from "@/app/schemas/profiles.schema";
+import { profileSchema, type Profile } from "@/schemas/profiles.schema";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { Globe, Loader2, MapPin } from "lucide-react";
-import { createProfileAction, updateProfileAction } from "@/app/actions/profiles";
+import { createProfileAction, updateProfileAction } from "@/actions/profiles";
 import { useRouter } from "next/navigation";
 import { SkillsSection } from "./SkillSection";
 import { EducationSection } from "./EducationSection";

@@ -1,6 +1,6 @@
 "use server";
 import { GoogleGenAI } from "@google/genai";
-import { Job, jobSchema } from "../schemas/jobs.schema";
+import { Job, jobSchema } from "@/schemas/jobs.schema";
 
 export const formatJobData = async (unstructredText: string): Promise<Job> => {
   const ai = new GoogleGenAI({
