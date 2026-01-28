@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { getAllJobs } from "@/app/actions/jobs";
+import { getAllJobs } from "@/actions/jobs";
 import { JobCard } from "./_components/JobCard";
 
 export default async function JobsPage({
@@ -22,7 +22,7 @@ export default async function JobsPage({
           <p className="text-muted-foreground text-sm font-medium">Managing {totalCount} saved opportunities</p>
         </div>
         <Button asChild className="rounded-full font-bold shadow-lg shadow-primary/20">
-          <Link href="/jobs/new"><Plus className="w-4 h-4 mr-2" /> New Job</Link>
+          <Link href="/dashboard/jobs/new"><Plus className="w-4 h-4 mr-2" /> New Job</Link>
         </Button>
       </div>
 

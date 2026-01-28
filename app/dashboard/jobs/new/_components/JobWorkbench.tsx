@@ -5,7 +5,7 @@ import { URLTopBar } from "./URLTopBar";
 import { RawInputPane } from "./RawInputPane";
 import { StructuredForm } from "./StructuredForm";
 import { useState } from "react";
-import { Job } from "@/app/schemas/jobs.schema";
+import { Job } from "@/schemas/jobs.schema";
 
 export function JobWorkbench() {
   const [structuredData, setStructuredData] = useState<Job | null>(null);

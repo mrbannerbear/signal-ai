@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const jobSchema = z.object({
+  id: z.uuid().optional(),
   title: z.string().min(5, "Title must be at least 5 characters long"),
   company: z.string().min(2, "Company name must be at least 2 characters long"),
   company_description: z.string().optional(),

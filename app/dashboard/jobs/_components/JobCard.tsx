@@ -6,7 +6,7 @@ import Link from "next/link";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function JobCard({ job }: { job: any }) {
   return (
-    <Link href={`/jobs/${job.id}`}>
+    <Link href={`/dashboard/jobs/${job.id}`}>
       <Card className="p-5 hover:border-primary/50 transition-all group hover:shadow-md h-full flex flex-col justify-between rounded-2xl border-muted/60">
         <div className="space-y-4">
           <div className="flex justify-between items-start">

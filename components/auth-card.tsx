@@ -9,7 +9,7 @@ import {
   signupSchema,
   type LoginInput,
   type SignupInput,
-} from "@/app/schemas/auth.schema";
+} from "@/schemas/auth.schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
