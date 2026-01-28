@@ -1,4 +1,4 @@
-import { getProfile } from "../actions/profiles";
+import { getProfile } from "@/actions/profiles";
 import { ProfileForm } from "./_components/ProfileForm";
 
 export default async function ProfilePage() {

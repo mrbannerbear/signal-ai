@@ -1,9 +1,9 @@
 "use server";
 
+import { createClient } from "@/app/lib/supabase/server";
+import { profileSchema } from "@/schemas/profiles.schema";
+import { mapDbToProfile, mapProfileToDb } from "@/utils/mapToDb";
 import { revalidatePath } from "next/cache";
-import { createClient } from "../lib/supabase/server";
-import { profileSchema } from "../schemas/profiles.schema";
-import { mapDbToProfile, mapProfileToDb } from "../utils/mapToDb";
 import { redirect } from "next/navigation";
 
 export async function updateProfileAction(profileId: string, formData: unknown) {

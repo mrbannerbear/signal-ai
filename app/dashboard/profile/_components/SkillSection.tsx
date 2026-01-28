@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
-import { Profile } from "@/app/schemas/profiles.schema";
+import { Profile } from "@/schemas/profiles.schema";
 
 export function SkillsSection({ control }: { control: Control<Profile> }) {
   const { fields, append, remove } = useFieldArray({

@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Sparkles, Link as LinkIcon } from "lucide-react";
 import { useRef } from "react";
-import { fetchJobTextFromURL } from "@/app/actions/scraper";
-import { Job } from "@/app/schemas/jobs.schema";
+import { fetchJobTextFromURL } from "@/actions/scraper";
+import { Job } from "@/schemas/jobs.schema";
 
 export function URLTopBar(
     { setStructuredData }: { setStructuredData: (data: Job) => void }

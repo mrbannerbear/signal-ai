@@ -10,8 +10,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { HelpCircle, MousePointerClick } from "lucide-react";
-import { formatJobData } from "@/app/actions/jobFormat";
-import { Job } from "@/app/schemas/jobs.schema";
+import { formatJobData } from "@/actions/jobFormat";
+import { Job } from "@/schemas/jobs.schema";
 
 export function RawInputPane({
   setStructuredData

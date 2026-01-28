@@ -1,6 +1,6 @@
 "use server";
+import { Job, jobSchema } from "@/schemas/jobs.schema";
 import { GoogleGenAI } from "@google/genai";
-import { Job, jobSchema } from "../schemas/jobs.schema";
 
 const minimalTextFromHtml = (html: string): string => {
   return html

@@ -6,7 +6,7 @@ import {
   loginSchema,
   SignupInput,
   signupSchema,
-} from "@/app/schemas/auth.schema";
+} from "@/schemas/auth.schema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
