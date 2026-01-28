@@ -97,7 +97,7 @@ export async function getProfile() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user) redirect("/auth");
 
   try {
   const { data: profile } = await supabase
