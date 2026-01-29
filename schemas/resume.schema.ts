@@ -6,24 +6,24 @@ export const ResumeProfileSchema = z.object({
   headline: z.string(),
   bio: z.string(),
   location: z.string(),
-  portfolioUrl: z.string(),
-  linkedinUrl: z.string(),
+  portfolioUrl: z.string().optional(),
+  linkedinUrl: z.string().optional(),
   skills: z.array(z.string()),
   experience: z.array(
     z.object({
       company: z.string(),
       role: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      summary: z.string(),
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
+      bullets: z.array(z.string()),
     })
   ),
   education: z.array(
     z.object({
       institution: z.string(),
-      degree: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
+      degree: z.string().optional(),
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
     })
   ),
 });
