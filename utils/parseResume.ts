@@ -20,6 +20,12 @@ const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
   ]);
 };
 
+export const generateFileHash = async (file: File): Promise<string> => {
+  // Simple client-side hash: Name + Size + LastModified
+  // Ideally, use a content hash (SHA-256 of arrayBuffer), but this is faster and sufficient for MVP "same file" check
+  return `${file.name}-${file.size}-${file.lastModified}`;
+};
+
 const sanitizeText = (text: string) =>
   text
     .replace(/\s+/g, " ")

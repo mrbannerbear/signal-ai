@@ -1,6 +1,5 @@
 import { getProfile } from "@/actions/profiles";
-import { ProfileForm } from "./_components/ProfileForm";
-import ResumeParser from "./_components/ResumeParser";
+import { ProfilePageContent } from "./_components/ProfilePageContent";
 
 export default async function ProfilePage() {
   const { profile } = await getProfile();
@@ -15,8 +14,8 @@ export default async function ProfilePage() {
           postings.
         </p>
       </div>
-      <ResumeParser />
-      <ProfileForm initialData={profile ?? undefined} />
+      <ProfilePageContent initialProfile={profile ?? undefined} />
+
     </div>
   );
 }

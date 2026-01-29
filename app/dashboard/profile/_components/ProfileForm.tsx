@@ -15,8 +15,16 @@ import { useRouter } from "next/navigation";
 import { SkillsSection } from "./SkillSection";
 import { EducationSection } from "./EducationSection";
 import { ExperienceSection } from "./ExperienceSection";
+import { useEffect } from "react";
+import { ResumeProfile } from "@/schemas/resume.schema";
 
-export function ProfileForm({ initialData } : { initialData?: Profile }) {
+export function ProfileForm({ 
+  initialData, 
+  importedData 
+}: { 
+  initialData?: Profile; 
+  importedData?: ResumeProfile | null;
+}) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -37,8 +45,103 @@ export function ProfileForm({ initialData } : { initialData?: Profile }) {
     },
   });
 
+  // Effect to handle imported resume data
+  useEffect(() => {
+    if (!importedData) return;
+
+    const currentValues = form.getValues();
+    let updatesCount = 0;
+
+    // Helper to update only if field is empty
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateIfEmpty = (key: keyof Profile, value: any) => {
+      if (value && !currentValues[key]) {
+        form.setValue(key, value, { shouldDirty: true });
+        updatesCount++;
+      }
+    };
+
+    updateIfEmpty("firstName", importedData.firstName);
+    updateIfEmpty("lastName", importedData.lastName);
+    updateIfEmpty("headline", importedData.headline);
+    updateIfEmpty("bio", importedData.bio);
+    updateIfEmpty("location", importedData.location);
+    updateIfEmpty("portfolioUrl", importedData.portfolioUrl);
+    updateIfEmpty("linkedinUrl", importedData.linkedinUrl);
+
+    // Arrays - Override if we have new data and current is empty, 
+    // OR just append? Plan said: REPLACE existing form arrays (cleanest start) if parser has items.
+    // However, to be safe, let's only replace if the existing array is empty to avoid data loss,
+    // Or prompt user? For now, let's go with: If imported has data, we overwrite logic ONLY IF current is empty
+    // OR we blindly overwrite as per "Apply" action implies intent.
+    // Let's stick to: "fill what is missing" logic for scalars, but for arrays, "Apply" might imply "Use this list".
+    // Better UX: If existing list is empty, use imported. If not, maybe append? 
+    // Use plan: "If parser has items, REPLACE existing form arrays (cleanest start)." 
+    // BUT checking if existing is empty is safer to prevent accidental wipe of manual work.
+    
+    // SKILLS
+    if (importedData.skills && importedData.skills.length > 0) {
+       // Only if current skills are empty? Or merge?
+       // Let's merge unique skills.
+       const currentSkills = form.getValues("skills") || [];
+       const newSkills = importedData.skills
+         .filter(skillName => !currentSkills.some(s => s.name.toLowerCase() === skillName.toLowerCase()))
+         .map(name => ({ name, level: "Intermediate" as const }));
+       
+       if (newSkills.length > 0) {
+         form.setValue("skills", [...currentSkills, ...newSkills], { shouldDirty: true });
+         updatesCount++;
+       }
+    }
+
+    // EXPERIENCE
+    if (importedData.experience && importedData.experience.length > 0) {
+      // Map format
+      const mappedExperience = importedData.experience.map(exp => ({
+         companyName: exp.company,
+         role: exp.role,
+         startDate: exp.startDate ? new Date(exp.startDate) : new Date(), // Fallback to now if invalid? Zod will validate. 
+         // Actually, let's try to parse strings validly. parser gives "YYYY-MM" or "Present".
+         // We might need a helper to safely parse loose date strings. For now, simple Date constructor.
+         endDate: exp.endDate && exp.endDate.toLowerCase() !== "present" ? new Date(exp.endDate) : undefined,
+         isCurrent: !exp.endDate || exp.endDate.toLowerCase() === "present",
+         description: exp.bullets ? exp.bullets.join("\n• ") : "", // Add bullet points
+         location: "",
+         position: 0
+      }));
+
+      // Strategy: If form has no experience, set it.
+      const currentExp = form.getValues("experience");
+      if (!currentExp || currentExp.length === 0) {
+        form.setValue("experience", mappedExperience, { shouldDirty: true });
+        updatesCount++;
+      }
+    }
+
+    // EDUCATION
+    if (importedData.education && importedData.education.length > 0) {
+       const mappedEducation = importedData.education.map(edu => ({
+         institution: edu.institution,
+         degree: edu.degree || "",
+         startDate: edu.startDate ? new Date(edu.startDate) : undefined,
+         graduationDate: edu.endDate ? new Date(edu.endDate) : undefined,
+         position: 0
+       }));
+
+       const currentEdu = form.getValues("education");
+       if (!currentEdu || currentEdu.length === 0) {
+         form.setValue("education", mappedEducation, { shouldDirty: true });
+         updatesCount++;
+       }
+    }
+
+    if (updatesCount > 0) {
+      toast.success(`Profile updated with ${updatesCount} fields from resume!`);
+    }
+
+  }, [importedData, form]);
+
   async function onSubmit(values: Profile) {
-    console.log(values)
     startTransition(async () => {
       const result = initialData?.id 
         ? await updateProfileAction(initialData.id, values)
@@ -46,33 +149,18 @@ export function ProfileForm({ initialData } : { initialData?: Profile }) {
 
       if (result.success) {
         toast.success("Profile saved!");
-        // router.push("/dashboard/jobs");
         router.refresh();
       } else {
         toast.error(result.message || "Failed to save profile");
-        console.error(result.errors);
       }
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function findNullPaths(obj: any, path: string[] = []): string[] {
-  if (obj === null) return [path.join(".") || "(root)"];
-  if (Array.isArray(obj)) {
-    return obj.flatMap((v, i) => findNullPaths(v, [...path, String(i)]));
+  async function onInvalid (e: any) {
+    console.error("Form validation failed", e);
+    toast.error("Please fix the errors in the form.");
   }
-  if (typeof obj === "object" && obj) {
-    return Object.entries(obj).flatMap(([k, v]) => findNullPaths(v, [...path, k]));
-  }
-  return [];
-}
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function onInvalid(errors: any) {
-  console.log("Form errors (raw):", errors);
-  console.log("Null paths:", findNullPaths(form.getValues()));
-  toast.error("Please fix the errors in the form.");
-}
 
   return (
     <Form {...form}>
