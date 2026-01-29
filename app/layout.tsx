@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { createClient } from "./lib/supabase/server";
-import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
-import DashboardLayout from "@/components/shared/DashboardLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,28 +23,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/auth");
-
-  // Check if this specific user has a profile record
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (!profile) {
-    redirect("/profile");
-  }
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DashboardLayout>{children}</DashboardLayout>
+        {children}
         <Toaster />
       </body>
     </html>
