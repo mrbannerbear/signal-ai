@@ -96,7 +96,7 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
   };
 
   return (
-    <Card className={`overflow-hidden transition-all duration-500 px-8 ${layout === "row" ? "bg-white border text-left shadow-sm" : "border-dashed border-2 bg-slate-50/50"}`}>
+    <Card className={`overflow-hidden transition-all duration-500 px-4 md:px-6 lg:px-8 ${layout === "row" ? "bg-white border text-left shadow-sm" : "border-dashed border-2 bg-slate-50/50"}`}>
       <CardContent className={`${layout === "row" ? "p-0" : "p-8"}`}>
         <AnimatePresence mode="wait">
           {status === "idle" && (
@@ -104,26 +104,26 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className={`flex ${layout === "row" ? "flex-col md:flex-row gap-8 items-center text-left p-8" : "flex-col items-center text-center py-4"}`}
+              className={`flex ${layout === "row" ? "flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center text-left p-6 md:p-8" : "flex-col items-center text-center py-4"}`}
             >
               {layout === "row" ? (
                  <>
-                   <div className="flex-1 space-y-2">
+                   <div className="flex-1 space-y-2 w-full">
                       <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2">
                         <Sparkles size={24} />
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900">
+                      <h3 className="text-lg md:text-xl font-bold text-slate-900">
                         Auto-Fill with AI
                       </h3>
                       <p className="text-slate-600 leading-relaxed max-w-md text-sm md:text-base">
                         Have a resume ready? Upload it here and we&apos;ll extract your details to populate the form below instantly.
                       </p>
                   </div>
-                  <div className="shrink-0">
+                  <div className="w-full md:w-auto shrink-0">
                     <Button
                       onClick={handleUpload}
                       size="lg"
-                      className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 font-bold px-8 h-12"
+                      className="w-full md:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 font-bold px-8 h-12"
                     >
                       <Upload className="mr-2 w-5 h-5" />
                       Upload Resume

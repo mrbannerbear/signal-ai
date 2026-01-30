@@ -27,7 +27,7 @@ export function SkillsSection({ control }: { control: Control<Profile> }) {
   };
 
   return (
-    <div className="space-y-4 p-6 border rounded-2xl bg-card shadow-sm">
+    <div className="space-y-4 p-5 md:p-6 border rounded-2xl bg-card shadow-sm">
       <div className="space-y-1">
         <h2 className="text-xl font-bold text-foreground">Technical Arsenal</h2>
         <p className="text-xs text-muted-foreground">Add skills the AI should use to rank you.</p>

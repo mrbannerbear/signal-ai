@@ -57,9 +57,9 @@ export const ProfilePageContent = ({
     <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Edit Mode Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
             {isFirstTime ? "Let's Build Your Profile" : "Edit Profile"}
           </h1>
           <p className="text-slate-500 mt-2">
