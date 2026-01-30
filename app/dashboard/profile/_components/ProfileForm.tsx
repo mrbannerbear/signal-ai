@@ -20,10 +20,12 @@ import { ResumeProfile } from "@/schemas/resume.schema";
 
 export function ProfileForm({ 
   initialData, 
-  importedData 
+  importedData,
+  onCancel
 }: { 
   initialData?: Profile; 
   importedData?: ResumeProfile | null;
+  onCancel?: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -68,21 +70,9 @@ export function ProfileForm({
     updateIfEmpty("location", importedData.location);
     updateIfEmpty("portfolioUrl", importedData.portfolioUrl);
     updateIfEmpty("linkedinUrl", importedData.linkedinUrl);
-
-    // Arrays - Override if we have new data and current is empty, 
-    // OR just append? Plan said: REPLACE existing form arrays (cleanest start) if parser has items.
-    // However, to be safe, let's only replace if the existing array is empty to avoid data loss,
-    // Or prompt user? For now, let's go with: If imported has data, we overwrite logic ONLY IF current is empty
-    // OR we blindly overwrite as per "Apply" action implies intent.
-    // Let's stick to: "fill what is missing" logic for scalars, but for arrays, "Apply" might imply "Use this list".
-    // Better UX: If existing list is empty, use imported. If not, maybe append? 
-    // Use plan: "If parser has items, REPLACE existing form arrays (cleanest start)." 
-    // BUT checking if existing is empty is safer to prevent accidental wipe of manual work.
     
     // SKILLS
     if (importedData.skills && importedData.skills.length > 0) {
-       // Only if current skills are empty? Or merge?
-       // Let's merge unique skills.
        const currentSkills = form.getValues("skills") || [];
        const newSkills = importedData.skills
          .filter(skillName => !currentSkills.some(s => s.name.toLowerCase() === skillName.toLowerCase()))
@@ -149,6 +139,7 @@ export function ProfileForm({
 
       if (result.success) {
         toast.success("Profile saved!");
+        router.push("/dashboard/profile"); 
         router.refresh();
       } else {
         toast.error(result.message || "Failed to save profile");
@@ -171,30 +162,30 @@ export function ProfileForm({
           <h2 className="text-xl font-bold">Identity & Persona</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField control={form.control} name="firstName" render={({ field }) => (
-              <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel>First Name</FormLabel><FormControl><Input placeholder="Jane" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="lastName" render={({ field }) => (
-              <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
           </div>
           <FormField control={form.control} name="headline" render={({ field }) => (
-            <FormItem><FormLabel>Headline</FormLabel><FormControl><Input placeholder="e.g. Fullstack Developer" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>Headline</FormLabel><FormControl><Input placeholder="e.g. Senior Fullstack Developer" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="bio" render={({ field }) => (
-            <FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea className="min-h-25" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea placeholder="Tell us about yourself..." className="min-h-25" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
         </div>
 
         {/* LINKS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <FormField control={form.control} name="location" render={({ field }) => (
-            <FormItem><FormLabel className="flex gap-2"><MapPin className="w-4 h-4"/> Location</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel className="flex gap-2"><MapPin className="w-4 h-4"/> Location</FormLabel><FormControl><Input placeholder="San Francisco, CA" {...field} /></FormControl></FormItem>
           )} />
           <FormField control={form.control} name="portfolioUrl" render={({ field }) => (
-            <FormItem><FormLabel className="flex gap-2"><Globe className="w-4 h-4"/> Portfolio</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel className="flex gap-2"><Globe className="w-4 h-4"/> Portfolio</FormLabel><FormControl><Input placeholder="https://portfolio.com" {...field} /></FormControl></FormItem>
           )} />
           <FormField control={form.control} name="linkedinUrl" render={({ field }) => (
-            <FormItem><FormLabel>LinkedIn</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel>LinkedIn</FormLabel><FormControl><Input placeholder="https://linkedin.com/in/jane" {...field} /></FormControl></FormItem>
           )} />
         </div>
 
@@ -204,9 +195,21 @@ export function ProfileForm({
         
         <EducationSection control={form.control} />
 
-        <Button type="submit" disabled={isPending} className="w-full h-14 text-lg font-black rounded-2xl uppercase">
-          {isPending ? <><Loader2 className="mr-2 animate-spin" /> Saving...</> : "Save Profile"}
-        </Button>
+        <div className="flex gap-4">
+          {onCancel && (
+             <Button 
+               type="button" 
+               variant="outline" 
+               onClick={onCancel}
+               className="flex-1 h-14 text-lg font-bold rounded-2xl uppercase border-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+              >
+               Cancel
+             </Button>
+          )}
+          <Button type="submit" disabled={isPending} className="flex-[2] h-14 text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
+            {isPending ? <><Loader2 className="mr-2 animate-spin" /> Saving...</> : "Save Profile"}
+          </Button>
+        </div>
       </form>
     </Form>
   );
