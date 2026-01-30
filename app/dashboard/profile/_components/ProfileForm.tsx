@@ -155,10 +155,10 @@ export function ProfileForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-10 pb-10">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 md:space-y-10 pb-10">
         
         {/* IDENTITY */}
-        <div className="grid gap-6 p-8 border rounded-3xl bg-card shadow-sm">
+        <div className="grid gap-6 p-5 md:p-8 border rounded-3xl bg-card shadow-sm">
           <h2 className="text-xl font-bold">Identity & Persona</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField control={form.control} name="firstName" render={({ field }) => (
@@ -195,18 +195,18 @@ export function ProfileForm({
         
         <EducationSection control={form.control} />
 
-        <div className="flex gap-4">
+        <div className="flex flex-col-reverse md:flex-row gap-4">
           {onCancel && (
              <Button 
                type="button" 
                variant="outline" 
                onClick={onCancel}
-               className="flex-1 h-14 text-lg font-bold rounded-2xl uppercase border-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+               className="w-full md:flex-1 h-12 md:h-14 text-base md:text-lg font-bold rounded-2xl uppercase border-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
               >
                Cancel
              </Button>
           )}
-          <Button type="submit" disabled={isPending} className="flex-[2] h-14 text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button type="submit" disabled={isPending} className="w-full md:flex-[2] h-12 md:h-14 text-base md:text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
             {isPending ? <><Loader2 className="mr-2 animate-spin" /> Saving...</> : "Save Profile"}
           </Button>
         </div>

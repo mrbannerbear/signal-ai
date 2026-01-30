@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col relative min-w-0">
         <Header onMenuClick={() => setIsMobileOpen(!isMobileOpen)} />
         
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto p-6 px-2 md:p-8 custom-scrollbar">
           <div className="max-w-6xl mx-auto flex flex-col min-h-full">
             <div className="flex-1">
               {children}
