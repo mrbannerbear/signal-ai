@@ -32,6 +32,7 @@ export function ExperienceSection({ control }: { control: any }) {
           type="button"
           variant="outline"
           size="sm"
+          className="bg-indigo-50 text-indigo-600 hover:text-indigo-600 hover:bg-indigo-100 border-indigo-200"
           onClick={() =>
             append({
               companyName: "",

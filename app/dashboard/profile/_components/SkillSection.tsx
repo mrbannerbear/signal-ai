@@ -46,7 +46,12 @@ export function SkillsSection({ control }: { control: Control<Profile> }) {
           }}
           className="rounded-xl"
         />
-        <Button type="button" onClick={addSkill} size="icon" className="rounded-xl shrink-0">
+        <Button 
+          type="button" 
+          onClick={addSkill} 
+          size="icon" 
+          className="rounded-xl shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100"
+        >
           <Plus className="w-4 h-4" />
         </Button>
       </div>

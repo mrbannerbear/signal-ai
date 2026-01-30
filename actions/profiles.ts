@@ -30,10 +30,6 @@ export async function updateProfileAction(profileId: string, formData: unknown) 
       supabase.from("education").delete().eq("profile_id", profileId),
     ]);
 
-    console.log(
-      "dbdata",
-      dbData);
-
   if (dbData.experience?.length) {
       const { error: expError } = await supabase.from("experience").insert(dbData.experience);
       if (expError) throw expError;

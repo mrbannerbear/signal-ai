@@ -19,7 +19,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
     .maybeSingle();
 
   if (!profile) {
-    redirect("/profile");
+    redirect("/dashboard/profile?editing=new");
   }
   return <DashboardLayout>{children}</DashboardLayout>;
 };
