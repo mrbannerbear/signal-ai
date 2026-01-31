@@ -18,7 +18,6 @@ export const educationSchema = z.object({
   id: z.uuid().optional(),
   institution: z.string().min(2, "Institution name is required"),
   degree: z.string().optional().or(z.literal("")),
-  fieldOfStudy: z.string().optional().or(z.literal("")),
   startDate: z.coerce.date().optional().nullable(),
   graduationDate: z.coerce.date().optional().nullable(),
   position: z.number().int().default(0),

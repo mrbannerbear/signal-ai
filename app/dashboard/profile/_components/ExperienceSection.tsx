@@ -32,6 +32,7 @@ export function ExperienceSection({ control }: { control: any }) {
           type="button"
           variant="outline"
           size="sm"
+          className="bg-indigo-50 text-indigo-600 hover:text-indigo-600 hover:bg-indigo-100 border-indigo-200"
           onClick={() =>
             append({
               companyName: "",
@@ -67,7 +68,7 @@ export function ExperienceSection({ control }: { control: any }) {
                 <Trash2 className="w-4 h-4" />
               </Button>
 
-              <CardContent className="p-6 grid gap-4">
+              <CardContent className="p-4 md:p-6 grid gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={control}
@@ -95,7 +96,7 @@ export function ExperienceSection({ control }: { control: any }) {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                   <FormField
                     control={control}
                     name={`experience.${index}.startDate`}
@@ -156,7 +157,7 @@ export function ExperienceSection({ control }: { control: any }) {
                     control={control}
                     name={`experience.${index}.isCurrent`}
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-3">
+                      <FormItem className="flex flex-row items-center space-x-2 space-y-0 pb-3 md:col-span-2">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -171,7 +172,7 @@ export function ExperienceSection({ control }: { control: any }) {
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-medium">
-                          Present
+                          I currently work here
                         </FormLabel>
                       </FormItem>
                     )}
