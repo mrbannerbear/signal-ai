@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ResumeProfile } from "@/schemas/resume.schema";
 import { Profile } from "@/schemas/profiles.schema";
 import ResumeParser from "./ResumeParser";
@@ -13,7 +13,7 @@ interface ProfilePageContentProps {
 import { useSearchParams, useRouter } from "next/navigation";
 import { ProfileReadView } from "./ProfileReadView";
 import { Button } from "@/components/ui/button";
-import { X, Sparkles } from "lucide-react";
+import { X } from "lucide-react";
 
 interface ProfilePageContentProps {
   initialProfile?: Profile;
@@ -38,16 +38,11 @@ export const ProfilePageContent = ({
   };
 
   const handleCancel = () => {
-    if (isFirstTime) {
-       // If first time, maybe cancel goes to dashboard root? or stays?
-       // For now, let's just go to view mode (which might show empty state is fine, or redirect logic will kick in)
-       router.push("/dashboard");
-    } else {
+    if (!isFirstTime) {
        router.push("/dashboard/profile");
     }
   };
 
-  // Default to View Mode if not editing and profile exists (has at least a specific field like firstName)
   if (!isEditing && initialProfile?.firstName) {
     return <ProfileReadView profile={initialProfile} email={email} />;
   }
