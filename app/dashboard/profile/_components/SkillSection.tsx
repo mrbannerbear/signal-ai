@@ -27,7 +27,7 @@ export function SkillsSection({ control }: { control: Control<Profile> }) {
   };
 
   return (
-    <div className="space-y-4 p-6 border rounded-2xl bg-card shadow-sm">
+    <div className="space-y-4 p-5 md:p-6 border rounded-2xl bg-card shadow-sm">
       <div className="space-y-1">
         <h2 className="text-xl font-bold text-foreground">Technical Arsenal</h2>
         <p className="text-xs text-muted-foreground">Add skills the AI should use to rank you.</p>
@@ -46,7 +46,12 @@ export function SkillsSection({ control }: { control: Control<Profile> }) {
           }}
           className="rounded-xl"
         />
-        <Button type="button" onClick={addSkill} size="icon" className="rounded-xl shrink-0">
+        <Button 
+          type="button" 
+          onClick={addSkill} 
+          size="icon" 
+          className="rounded-xl shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100"
+        >
           <Plus className="w-4 h-4" />
         </Button>
       </div>
