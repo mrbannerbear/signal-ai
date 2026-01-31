@@ -147,15 +147,9 @@ export function ProfileForm({
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async function onInvalid (e: any) {
-    console.error("Form validation failed", e);
-    toast.error("Please fix the errors in the form.");
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6 md:space-y-10 pb-10">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-10 pb-10">
         
         {/* IDENTITY */}
         <div className="grid gap-6 p-5 md:p-8 border rounded-3xl bg-card shadow-sm">
@@ -206,7 +200,7 @@ export function ProfileForm({
                Cancel
              </Button>
           )}
-          <Button type="submit" disabled={isPending} className="w-full md:flex-[2] h-12 md:h-14 text-base md:text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button type="submit" disabled={isPending} className="w-full md:flex-2 h-12 md:h-14 text-base md:text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
             {isPending ? <><Loader2 className="mr-2 animate-spin" /> Saving...</> : "Save Profile"}
           </Button>
         </div>
