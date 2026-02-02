@@ -1,143 +1,183 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@radix-ui/react-separator";
-import { Badge, Check, ExternalLink, MapPin } from "lucide-react";
+import { Job } from "@/schemas/jobs.schema";
+import {
+  MapPin,
+  Briefcase,
+  DollarSign,
+  Globe,
+  Clock,
+  ArrowUpRight,
+  Building2,
+  Sparkles,
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default async function JobDetailPage({ params }: { params: { id: string } }) {
+export default async function JobDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ mode?: string }>;
+}) {
   const { id } = await params;
+  const { mode } = await searchParams;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const [jobRes, profileRes] = await Promise.all([
-    supabase.from("jobs").select("*").eq("id", id).single(),
-    user 
-      ? supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle() 
-      : Promise.resolve({ data: null })
-  ]);
+  if (!user) {
+    redirect("/auth");
+  }
 
-  if (jobRes.error || !jobRes.data) throw new Error("Job not found");
-  
-  const job = jobRes.data;
-  const profile = profileRes?.data;
+  const { data: job, error } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("id", id)
+    .single<Job>();
+
+  if (error || !job) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+        <h1 className="text-2xl font-bold text-slate-900">Job not found</h1>
+        <Link href="/dashboard/jobs">
+          <Button variant="outline">Back to Jobs</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
-      {/* 1. Header: Quick Context & Status */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b pb-8">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 text-muted-foreground text-sm font-medium uppercase tracking-widest">
-            <Link href="/dashboard/jobs" className="hover:text-primary transition-colors">Jobs</Link>
-            <span>/</span>
-            <span className="text-foreground">{job.company}</span>
-          </div>
-          <h1 className="text-4xl font-black tracking-tight">{job.title}</h1>
-          <div className="flex flex-wrap gap-4 pt-2">
-             <Badge className="rounded-md border-primary/20 bg-primary/5 text-primary">
-               {job.employment_type}
-             </Badge>
-             <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-               <MapPin className="w-4 h-4" /> {job.location}
-             </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-            {/* Action Buttons */}
-            <Button variant="outline" className="rounded-xl font-bold">Edit Details</Button>
-            <Button className="rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary">
-              Mark as Applied
-            </Button>
-        </div>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* LEFT COLUMN: THE INTEL (70%) */}
-        <div className="lg:col-span-2 space-y-10">
-          <section className="space-y-4">
-            <h2 className="text-lg font-black uppercase tracking-widest text-muted-foreground/70">The Role</h2>
-            <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {job.description}
-            </div>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-lg font-black uppercase tracking-widest text-muted-foreground/70">Requirements</h2>
-            <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {job.requirements}
-            </div>
-          </section>
-        </div>
-
-        {/* RIGHT COLUMN: THE SIGNAL (30%) */}
-        <aside className="space-y-6">
-          {/* AI MATCH CARD */}
-          <Card className="p-6 rounded-[2.5rem] border-primary/20 bg-primary/2 shadow-2xl relative overflow-hidden">
-             {/* Match Score Gauge */}
-             <div className="text-center space-y-2 relative z-10">
-               <div className="inline-flex items-center justify-center p-4 rounded-full bg-background border shadow-inner mb-2">
-                 <span className="text-4xl font-black text-primary">{job.match_score || "—"}%</span>
-               </div>
-               <h3 className="font-bold text-xl italic tracking-tight">Signal Strength</h3>
-               <p className="text-xs text-muted-foreground px-4 leading-relaxed">
-                 Based on your current profile and the <strong>{job.skills?.length}</strong> detected tech requirements.
-               </p>
-             </div>
-
-             <Separator className="my-6 opacity-50" />
-
-             {/* Skills Comparison */}
-             <div className="space-y-4">
-               <h4 className="text-[10px] font-black uppercase tracking-widest flex justify-between">
-                 Skills Gap <span>Match / Missing</span>
-               </h4>
-               <div className="flex flex-wrap gap-2">
-                  {/* Simplified Skill Tags */}
-                  {job.skills?.map((skill: string) => {
-                    const isMatched = profile?.skills?.includes(skill);
-                    return (
-                      <Badge
-                        key={skill} 
-                        className={`rounded-lg px-2 py-1 text-[10px] uppercase font-bold ${
-                          isMatched ? "bg-green-500 hover:bg-green-600" : "bg-muted text-muted-foreground/50"
-                        }`}
-                      >
-                        {isMatched && <Check className="w-2.5 h-2.5 mr-1" />}
-                        {skill}
-                      </Badge>
-                    );
-                  })}
-               </div>
-             </div>
-
-             {/* AI Insight Placeholder */}
-             <div className="mt-8 p-4 rounded-2xl bg-background/50 border border-dashed border-primary/20">
-                <p className="text-[11px] text-muted-foreground italic font-medium">
-                  &quot;You match 80% of the stack. Mentioning your experience with <strong>{job.skills?.[0]}</strong> in your bio would raise your signal to 90%.&quot;
-                </p>
-             </div>
-          </Card>
-
-          {/* Quick Stats */}
-          <Card className="p-6 rounded-[2rem] border-muted/50">
-             <div className="space-y-4 text-sm font-medium">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Company Site</span>
-                  <a href="#" className="text-primary hover:underline flex items-center gap-1">Visit <ExternalLink className="w-3 h-3"/></a>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Est. Salary</span>
-                  <span className="text-foreground">{job.compensation || "Not listed"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Experience</span>
-                  <span className="text-foreground font-bold">{job.experience_level}</span>
-                </div>
-             </div>
-          </Card>
-        </aside>
+    <div className="max-w-4xl mx-auto space-y-6 px-0 md:px-4 animate-in fade-in duration-500 pb-10">
+      {/* Navigation Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-slate-500 font-medium px-4 md:px-0">
+        <Link
+          href="/dashboard/jobs"
+          className="hover:text-indigo-600 transition-colors"
+        >
+          Jobs
+        </Link>
+        <span>/</span>
+        <span className="text-slate-900">{job.title}</span>
       </div>
+
+      {/* Header Card */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+        
+        <div className="relative z-10 flex flex-col xl:flex-row xl:items-start gap-6">
+          {/* Main Info */}
+          <div className="flex-1 min-w-0">
+            <div className="mb-6">
+              <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2 tracking-tight leading-tight">
+                {job.title}
+              </h1>
+              <div className="flex items-center gap-2 text-xl text-slate-600 font-medium">
+                <Building2 className="w-5 h-5 text-indigo-500" />
+                {job.company}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 items-center text-sm text-slate-500 font-medium">
+              {/* Employment Type */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                <Briefcase size={14} />
+                {job.employment_type}
+              </div>
+
+              {/* Location */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100">
+                <MapPin size={14} />
+                {job.location}
+              </div>
+
+              {/* Salary */}
+              {job.compensation && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100">
+                  <DollarSign size={14} />
+                  {job.compensation}
+                </div>
+              )}
+
+              {/* Experience */}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100">
+                <Clock size={14} />
+                {job.experience_level}
+              </div>
+
+              {/* External Link */}
+              <a
+                href="#"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 rounded-full border border-slate-100 transition-colors"
+              >
+                <Globe size={14} />
+                Visit Website <ArrowUpRight size={12} />
+              </a>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0 xl:pt-2">
+            <Link href={`/dashboard/jobs/${job.id}?mode=analysis+new`}>
+              <Button
+                variant={mode === "analysis new" ? "secondary" : "default"}
+                size="sm"
+                className={`w-full sm:w-auto rounded-full gap-2 font-semibold transition-colors ${
+                  mode === "analysis new"
+                    ? "bg-indigo-100 text-indigo-700 border border-indigo-200 hover:bg-indigo-200"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20"
+                }`}
+              >
+                <Sparkles size={14} />
+                <span className="md:inline">Compare With Your Profile</span>
+              </Button>
+            </Link>
+            <Link href={`/dashboard/jobs/${job.id}?mode=analysis+saved`}>
+              <Button
+                variant={mode === "analysis saved" ? "secondary" : "outline"}
+                size="sm"
+                className={`w-full sm:w-auto rounded-full gap-2 font-semibold transition-colors ${
+                  mode === "analysis saved"
+                    ? "bg-emerald-100 text-emerald-700 border border-emerald-200 hover:bg-emerald-200"
+                    : "border-slate-200 hover:bg-slate-50 hover:text-indigo-600 bg-white/80 backdrop-blur-sm md:bg-white"
+                }`}
+              >
+                <FileText size={14} />
+                <span className="md:inline">View Analysis</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Decorative background element */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-16 -mt-16 z-0 opacity-50 pointer-events-none" />
+      </div>
+
+      {/* Description Card */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+          <span className="w-8 h-1 rounded-full bg-indigo-500" />
+          The Role
+        </h3>
+        <div className="prose prose-slate prose-lg max-w-none text-slate-600 leading-relaxed whitespace-pre-wrap">
+          {job.description}
+        </div>
+      </div>
+
+      {/* Requirements Card */}
+      {job.requirements && (
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <span className="w-8 h-1 rounded-full bg-emerald-500" />
+            Requirements
+          </h3>
+          <div className="prose prose-slate prose-lg max-w-none text-slate-600 leading-relaxed whitespace-pre-wrap">
+            {job.requirements}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

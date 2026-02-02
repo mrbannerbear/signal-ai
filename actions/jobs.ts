@@ -74,7 +74,7 @@ export const getAllJobs = async (page: number = 1, pageSize: number = 9) => {
   if (error) throw new Error(error.message);
 
   return {
-    jobs: data || [],
+    jobs: data as Job[] || [],
     totalCount: count || 0,
     totalPages: Math.ceil((count || 0) / pageSize),
   };
