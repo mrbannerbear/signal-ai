@@ -27,7 +27,6 @@ export const formatResumeData = async (
       .single();
 
     if (existing) {
-      console.log("HIT: Resume found in DB cache.");
       return existing.content as ResumeProfile;
     }
 

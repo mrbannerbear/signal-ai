@@ -17,8 +17,6 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
     .select("user_id")
     .eq("user_id", user.id)
     .maybeSingle();
-  console.log("layout profile check", profile);
-  console.log("user id", user.id);
   if (!profile) {
     redirect("/dashboard/profile?editing=new");
   }

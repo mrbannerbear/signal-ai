@@ -10,6 +10,7 @@ import { AnalysisSection } from "./../schemas/analysis.schema";
 import { GoogleGenAI } from "@google/genai";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
+
 // Server action to create or get existing analysis run
 export async function createAnalysisProcess(rawInput: unknown) {
   const supabase = await createClient();
@@ -56,97 +57,14 @@ export async function createAnalysisProcess(rawInput: unknown) {
   };
 }
 
-const POLL_INTERVAL = 5000; // 5 seconds
-const sections: AnalysisSection[] = [
-  "summary",
-  "skills",
-  "gaps",
-  "seniority",
-  "location",
-  "suggestions",
-];
-
-// Updates the analysis run status and triggers the worker
-export async function analysisWorker() {
-  const supabase = await createClient();
-
-  while (true) {
-    try {
-      const { data: run, error } = await supabase
-        .from("analysis_run")
-        .update({ status: "running", started_at: new Date().toISOString() })
-        .eq("status", "queued")
-        .limit(1)
-        .select("*")
-        .single();
-
-      if (error && error.code !== "PGRST116") console.error(error);
-      if (!run) {
-        await new Promise((r) => setTimeout(r, POLL_INTERVAL));
-        continue;
-      }
-
-      console.log(`Processing run ${run.id}`);
-
-      let sectionFailed = false;
-
-      for (const section of sections) {
-        try {
-          const resultContent = await performLLMAnalysis(
-            run.job_id,
-            run.profile_id,
-            section,
-          );
-
-          const { error: insertError } = await supabase
-            .from("analysis_result")
-            .insert({
-              analysis_run_id: run.id,
-              section,
-              content: resultContent,
-            });
-
-          if (insertError) throw insertError;
-
-          console.log(`Inserted ${section} for run ${run.id}`);
-        } catch (sectionError) {
-          console.error(
-            `Section failed ${section} for run ${run.id}:`,
-            sectionError,
-          );
-          sectionFailed = true;
-        }
-      }
-
-      const finalStatus = sectionFailed ? "failed" : "completed";
-      const { error: updateError } = await supabase
-        .from("analysis_run")
-        .update({
-          status: finalStatus,
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", run.id);
-
-      if (updateError) console.error("Error updating run status:", updateError);
-
-      console.log(`Run ${run.id} finished with status ${finalStatus}`);
-    } catch (err) {
-      console.error("Worker error:", err);
-    }
-
-    await new Promise((r) => setTimeout(r, POLL_INTERVAL));
-  }
-}
-
 // calls an LLM to perform analysis
 export const performLLMAnalysis = async (
   jobId: string,
   profileId: string | null,
   section: AnalysisSection,
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   const supabase = await createClient();
-  await getUserOnServer();
 
   const { data: job, error: jobError } = await supabase
     .from("jobs")
@@ -179,8 +97,8 @@ export const performLLMAnalysis = async (
   });
 
   if (!aiResponse.text) throw new Error("AI response is empty");
-  const resultContent = JSON.parse(aiResponse.text);
-  return resultContent;
+  const parsed = AnalysisResultSchema.parse(JSON.parse(aiResponse.text));
+  return parsed;
 };
 
 function generatePrompt(
@@ -188,20 +106,55 @@ function generatePrompt(
   job: Job,
   profile: Profile | null,
 ) {
-  return `You are a career AI assistant. You are given:
+  const baseContext = `
+You are a strict, analytical career AI.
 
-    1. Job description:
-    ${job.description}
+You are given:
+1. Job description:
+${job.description}
 
-    2. Full candidate profile:
-    ${profile}
+2. Full candidate profile (all sections combined):
+${JSON.stringify(profile, null, 2)}
 
-    Task: Identify which required skills from the job are present in the candidate's profile and which are missing.
+Rules:
+- Consider the ENTIRE profile holistically.
+- Do not assume missing data means lack of skill.
+- Only output valid JSON matching AnalysisResultSchema.
+`;
 
-    Output strictly as JSONB for the section "${section}" according to the AnalysisResultSchema.`;
-}
+  const sectionTaskMap: Record<AnalysisSection, string> = {
+    summary: `
+Generate a concise, factual summary of how well the candidate matches the job.
+No advice. No fluff. Just assessment.
+`,
+    skills: `
+List required job skills that are present vs missing.
+Only include skills explicitly or implicitly demonstrated.
+`,
+    gaps: `
+Identify concrete gaps between job requirements and candidate profile.
+Do NOT repeat skills already listed as missing unless justified.
+`,
+    seniority: `
+Assess whether the candidate's experience level matches the job seniority.
+Explain briefly with evidence.
+`,
+    location: `
+Assess location compatibility (remote / onsite / relocation).
+Do not guess willingness.
+`,
+    suggestions: `
+Provide actionable suggestions to improve alignment with THIS job.
+No generic resume tips.
+`,
+  };
 
-// Server action to run analysis
-export async function runAnalysis(rawInput: unknown) {
-  return await createAnalysisProcess(rawInput);
+  return `
+${baseContext}
+
+SECTION TASK (${section.toUpperCase()}):
+${sectionTaskMap[section]}
+
+Output ONLY valid JSON for section "${section}".
+`;
 }
