@@ -17,8 +17,6 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isNewProfile = pathname.includes("/dashboard/profile") && searchParams.get("editing") === "new";
-  console.log("DashboardLayout isNewProfile:", isNewProfile);
-  console.log("DashboardLayout pathname:", pathname);
   if (isNewProfile) {
     return children;
   }

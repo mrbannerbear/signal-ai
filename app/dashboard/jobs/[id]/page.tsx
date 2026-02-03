@@ -1,4 +1,4 @@
-import { runAnalysis } from "@/actions/compare";
+import { createAnalysisProcess, performLLMAnalysis } from "@/actions/compare";
 import { createClient } from "@/app/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Job } from "@/schemas/jobs.schema";
@@ -54,14 +54,13 @@ export default async function JobDetailPage({
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("id")
+          .select("*")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (profile?.id) {
           try {
-            const result = await runAnalysis({ job_id: job.id, profile_id: profile.id });
-            console.log("runAnalysis action called successfully", result);
+            const result = await createAnalysisProcess({ job_id: job.id, profile_id: profile.id });
           }
           catch (err) {
             console.error("runAnalysis action failed", err);

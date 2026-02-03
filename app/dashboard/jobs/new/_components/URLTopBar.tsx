@@ -17,7 +17,6 @@ export function URLTopBar(
     e.preventDefault();
     try {
       const jobText = await fetchJobTextFromURL(inputRef.current?.value || "");
-      console.log("Fetched Job Text:", jobText);
       setStructuredData(jobText);
     } catch (error) {
         console.error("Error fetching job text:", error);

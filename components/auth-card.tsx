@@ -72,7 +72,6 @@ export default function AuthCard({
         mode === "login"
           ? await onSignIn({ email: values.email, password: values.password })
           : await onSignUp(values);
-      console.log("AuthCard onSubmit result:", result);
 
       if (result?.error) {
         setStatus({ type: "error", message: result.error });

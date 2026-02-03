@@ -75,3 +75,7 @@ WITH CHECK (
       AND ar.user_id = auth.uid()
   )
 );
+
+ALTER TABLE analysis_result
+ADD CONSTRAINT unique_run_section
+UNIQUE (analysis_run_id, section);
