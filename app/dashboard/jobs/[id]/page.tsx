@@ -1,3 +1,4 @@
+import { runAnalysis } from "@/actions/compare";
 import { createClient } from "@/app/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Job } from "@/schemas/jobs.schema";
@@ -13,7 +14,6 @@ import {
   FileText,
 } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function JobDetailPage({
   params,
@@ -24,14 +24,8 @@ export default async function JobDetailPage({
 }) {
   const { id } = await params;
   const { mode } = await searchParams;
+  const modeKey = mode?.replace(" ", "+");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth");
-  }
 
   const { data: job, error } = await supabase
     .from("jobs")
@@ -49,6 +43,36 @@ export default async function JobDetailPage({
       </div>
     );
   }
+
+  // if mode is analysis+new, call runAnalysis action here to create or get existing analysis run
+    if (modeKey === "analysis+new") {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profile?.id) {
+          try {
+            const result = await runAnalysis({ job_id: job.id, profile_id: profile.id });
+            console.log("runAnalysis action called successfully", result);
+          }
+          catch (err) {
+            console.error("runAnalysis action failed", err);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("runAnalysis failed:", err);
+    }
+  }
+  
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 px-0 md:px-4 animate-in fade-in duration-500 pb-10">
