@@ -1,178 +1,210 @@
 "use server";
-
+import { OpenRouter } from "@openrouter/sdk"
 import { createClient } from "@/app/lib/supabase/server";
-import {
-  AnalysisResultSchema,
-  CreateAnalysisRunSchema,
-} from "@/schemas/analysis.schema";
-import getUserOnServer from "@/utils/getUserOnServer";
-import { AnalysisSection } from "../schemas/analysis.schema";
-import { GoogleGenAI } from "@google/genai";
-import { Job } from "@/schemas/jobs.schema";
-import { Profile } from "@/schemas/profiles.schema";
 
-// Server action to create or get existing analysis run
-export async function createAnalysisProcess(rawInput: unknown) {
+export async function analyzeJob(jobId: string, profileId: string | null) {
   const supabase = await createClient();
-  const user = await getUserOnServer();
 
-  const input = CreateAnalysisRunSchema.parse(rawInput);
-  const { job_id, profile_id } = input;
-
-  const { data: existingRun } = await supabase
-    .from("analysis_run")
+  // Check for existing analysis
+  const { data: existing } = await supabase
+    .from("analysis")
     .select("*")
-    .eq("user_id", user.id)
-    .eq("job_id", job_id)
-    .eq("profile_id", profile_id)
-    .in("status", ["queued", "running"])
-    .maybeSingle();
-
-  if (existingRun) {
-    return {
-      run: existingRun,
-      reused: true,
-    };
-  }
-
-  const { data: newRun, error: insertError } = await supabase
-    .from("analysis_run")
-    .insert({
-      user_id: user.id,
-      job_id,
-      profile_id,
-      status: "queued",
-    })
-    .select()
+    .eq("job_id", jobId)
+    .eq("profile_id", profileId)
     .single();
 
-  if (insertError) {
-    console.error("Error creating new analysis run", insertError);
-    throw new Error("Failed to create analysis run");
+  if (existing) {
+    return existing.content;
   }
 
-  return {
-    run: newRun,
-    reused: false,
-  };
-}
-
-// calls an LLM to perform analysis
-export const performLLMAnalysis = async (
-  jobId: string,
-  profileId: string | null,
-  section: AnalysisSection,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  externalSupabase?: any,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any> => {
-  const supabase = externalSupabase ?? (await createClient());
-
+  // Fetch job
   const { data: job, error: jobError } = await supabase
     .from("jobs")
     .select("*")
     .eq("id", jobId)
     .single();
-  if (jobError || !job) throw jobError || new Error("Job not found");
 
+  if (jobError || !job) {
+    throw new Error("Job not found");
+  }
+
+  // Fetch profile if provided
   let profile = null;
   if (profileId) {
-    const { data: prof, error: profileError } = await supabase
+    const { data } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", profileId)
       .single();
-    if (profileError) throw profileError;
-    profile = prof;
+    profile = data;
   }
 
-  const prompt = generatePrompt(section, job, profile);
+  const ai = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
-  const aiResponse = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseJsonSchema: AnalysisResultSchema.toJSONSchema(),
-    },
+   const response = await ai.callModel({
+    model: "openai/gpt-4o-mini", // Use a model that supports structured outputs
+    input: generatePrompt(job, profile),
   });
 
-  if (!aiResponse.text) throw new Error("AI response is empty");
-  const parsed = AnalysisResultSchema.parse(JSON.parse(aiResponse.text));
-  return parsed;
-};
+  const text = await response.getText() ?? "";
+  console.log("LLM Response:", text);
+  const jsonMatch =
+    text.match(/```json\n?([\s\S]*?)\n?```/) || text.match(/\{[\s\S]*\}/);
 
-function generatePrompt(
-  section: AnalysisSection,
-  job: Job,
-  profile: Profile | null,
-) {
-  const baseContext = `
-You are a strict, analytical career AI.
-
-You are given:
-1. Job description:
-${job.description}
-
-2. Full candidate profile (all sections combined):
-${JSON.stringify(profile, null, 2)}
-
-Rules:
-- Consider the ENTIRE profile holistically.
-- Do not assume missing data means lack of skill.
-- Only output valid JSON matching AnalysisResultSchema.
-`;
-
-  const sectionTaskMap: Record<AnalysisSection, string> = {
-    summary: `
-Generate a concise, factual summary of how well the candidate matches the job.
-No advice. No fluff. Just assessment.
-`,
-    skills: `
-List required job skills that are present vs missing.
-Only include skills explicitly or implicitly demonstrated.
-`,
-    gaps: `
-Identify concrete gaps between job requirements and candidate profile.
-Do NOT repeat skills already listed as missing unless justified.
-`,
-    seniority: `
-Assess whether the candidate's experience level matches the job seniority.
-Explain briefly with evidence.
-`,
-    location: `
-Assess location compatibility (remote / onsite / relocation).
-Do not guess willingness.
-`,
-    suggestions: `
-Provide actionable suggestions to improve alignment with THIS job.
-No generic resume tips.
-`,
-  };
-
-  return `
-${baseContext}
-
-SECTION TASK (${section.toUpperCase()}):
-${sectionTaskMap[section]}
-
-Output ONLY valid JSON for section "${section}".
-`;
-}
-
-
-export async function getAnalysisResults(analysisRunId : string) {
-  const supabase = await createClient();
-  const { data: results, error } = await supabase
-    .from("analysis_result")
-    .select("*")
-    .eq("analysis_run_id", analysisRunId);
-
-  if (error) {
-    console.error("Error fetching analysis results:", error);
-    throw error;
+  if (!jsonMatch) {
+    throw new Error("Failed to parse LLM response");
   }
 
-  return results;
+  const content = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+
+  // Save to database
+  const { error: insertError } = await supabase
+  .from("analysis")
+  .upsert(
+      { job_id: jobId, profile_id: profileId, content },
+      { onConflict: "job_id,profile_id" }
+    );
+
+  if (insertError) {
+    console.error("Insert error:", insertError);
+    // Still return the result even if save fails
+  }
+
+  return content;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function generatePrompt(job: any, profile: any): string {
+  let skillsList = "Not specified";
+
+  if (profile?.skills) {
+    try {
+      const skills =
+        typeof profile.skills === "string"
+          ? JSON.parse(profile.skills)
+          : profile.skills;
+
+      if (Array.isArray(skills)) {
+        skillsList = skills
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((s: any) => (typeof s === "string" ? s : s.name))
+          .join(", ");
+      }
+    } catch {
+      skillsList = "Not specified";
+    }
+  }
+
+  const profileSection = profile
+    ? `
+## Candidate Profile
+IMPORTANT:
+- Refer to the candidate directly as "you"
+- Give advice as a pragmatic career coach
+- Avoid generic career advice
+
+- Name: ${profile.first_name || ""} ${profile.last_name || ""}
+- Title: ${profile.headline || "Not specified"}
+- Location: ${profile.location || "Not specified"}
+- Skills: ${skillsList}
+- Bio/Experience: ${profile.bio || "Not specified"}
+`
+    : `
+No candidate profile provided.
+Give analysis that applies to a typical applicant for this role.
+`;
+
+  return `
+You are an expert job analyst and career coach.
+
+Your task is to analyze the job posting ${
+    profile ? "against the candidate profile" : ""
+  } and produce ONLY high-signal, job-specific insights.
+
+STRICT RULES:
+- Do NOT give generic advice.
+- Every suggestion must be tied to a specific job requirement or profile detail.
+- If advice would apply to most frontend jobs, OMIT IT.
+- Prefer concrete rewrites and examples over abstract tips.
+- If a section has no meaningful output, return an empty array.
+- Do not invent skills or experience not present in the profile.
+
+## Job Details
+- Title: ${job.title}
+- Company: ${job.company}
+- Location: ${job.location || "Not specified"}
+- Employment Type: ${job.employment_type || "Not specified"}
+- Experience Level: ${job.experience_level || "Not specified"}
+- Description: ${job.description || "Not specified"}
+- Requirements: ${job.requirements || "Not specified"}
+- Compensation: ${job.compensation || "Not specified"}
+
+${profileSection}
+
+Return a JSON object with EXACTLY this structure:
+
+{
+  "summary": {
+    "overview": "2–3 sentence role summary focused on impact and expectations",
+    "keyPoints": ["3–5 concrete responsibilities or expectations"]
+  },
+  "skills": {
+    "required": ["skills explicitly required by the job"],
+    "preferred": ["skills listed as nice-to-have"],
+    "matchingSkills": ["skills you already have that match the job"]
+  },
+  "gaps": {
+    "missingSkills": ["important skills you lack"],
+    "riskLevel": "low | medium | high",
+    "recommendations": [
+      {
+        "skill": "missing skill",
+        "action": "specific way to address it",
+        "timeEstimate": "days | weeks | months"
+      }
+    ]
+  },
+  "seniority": {
+    "level": "junior | mid | senior | lead | executive",
+    "yearsExpected": "X–Y years",
+    "candidateFit": "short, honest assessment of fit"
+  },
+  "location": {
+    "type": "remote | hybrid | onsite",
+    "location": "city, country or Remote",
+    "relocationRequired": false,
+    "candidateMatch": "how your location affects candidacy"
+  },
+  "suggestions": {
+    "resumeEdits": [
+      {
+        "targetSection": "Experience | Project | Skills",
+        "why": "which job requirement this addresses",
+        "exampleRewrite": "specific bullet you could add or modify"
+      }
+    ],
+    "interviewAngles": [
+      {
+        "topic": "specific topic to prepare",
+        "whyTheyCare": "why this matters for THIS role",
+        "howToAnswer": "angle you should take"
+      }
+    ],
+    "redFlags": [
+      {
+        "risk": "what might weaken your candidacy",
+        "mitigation": "how to offset or explain it"
+      }
+    ]
+  },
+  "overallFitScore": {
+    "score": 0,
+    "explanation": "why this score was given",
+    "
+  }
+}
+
+Return ONLY valid JSON wrapped in \`\`\`json code blocks.
+No prose. No markdown outside JSON.
+`;
 }
