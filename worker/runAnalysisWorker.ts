@@ -1,5 +1,6 @@
-import { performLLMAnalysis } from "@/actions/compare";
-import { createClient } from "@/app/lib/supabase/server";
+import "dotenv/config";
+import { performLLMAnalysis } from "@/actions/analysis";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import { AnalysisSection } from "@/schemas/analysis.schema";
 
 const POLL_INTERVAL = 5000; // 5 seconds
@@ -13,8 +14,8 @@ const sections: AnalysisSection[] = [
 ];
 
 // Updates the analysis run status and triggers the worker
-export async function runAnalysisWorker() {
-  const supabase = await createClient();
+export async function runAnalysisWorker(): Promise<boolean> {
+  const supabase = createServiceClient();
 
   try {
     const { data: run, error } = await supabase
@@ -27,19 +28,23 @@ export async function runAnalysisWorker() {
 
     if (error && error.code !== "PGRST116") console.error(error);
     if (!run) {
-      await new Promise((r) => setTimeout(r, POLL_INTERVAL));
-      return;
+      return false; // No work found
     }
 
+    console.log(`[Worker] Processing run ${run.id}`);
     let sectionFailed = false;
 
     for (const section of sections) {
+      console.log(`[Worker] Starting section: ${section}`);
       try {
+        console.log(`[Worker] Starting section: ${section}`);
         const resultContent = await performLLMAnalysis(
           run.job_id,
           run.profile_id,
           section,
+          supabase,
         );
+        console.log(`[Worker] Completed section: ${section}`);
 
         const { error: insertError } = await supabase
           .from("analysis_result")
@@ -52,7 +57,11 @@ export async function runAnalysisWorker() {
             { onConflict: "analysis_run_id,section" },
           );
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error(`[Worker] Insert error for ${section}:`, insertError);
+          throw insertError;
+        }
+        console.log(`[Worker] Saved section: ${section}`);
       } catch (sectionError) {
         console.error(
           `Section failed ${section} for run ${run.id}:`,
@@ -62,6 +71,7 @@ export async function runAnalysisWorker() {
       }
     }
 
+    console.log(`[Worker] All sections done, updating status to ${sectionFailed ? "failed" : "completed"}`);
     const finalStatus = sectionFailed ? "failed" : "completed";
     const { error: updateError } = await supabase
       .from("analysis_run")
@@ -72,18 +82,19 @@ export async function runAnalysisWorker() {
       .eq("id", run.id);
 
     if (updateError) console.error("Error updating run status:", updateError);
+
+    return true; // Work was done
   } catch (err) {
     console.error("Worker error:", err);
+    return false;
   }
-
-  await new Promise((r) => setTimeout(r, POLL_INTERVAL));
 }
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV !== "production") {
   (async () => {
     while (true) {
       await runAnalysisWorker();
-      await new Promise((r) => setTimeout(r, 5000));
+      await new Promise((r) => setTimeout(r, POLL_INTERVAL));
     }
   })();
 }
