@@ -1,6 +1,7 @@
 "use client";
 
-import { createAnalysisProcess, getAnalysisResults } from "@/actions/analysis";
+import { analyzeJob } from "@/actions/analysis";
+import { getExistingAnalysis } from "@/actions/getAnalysis";
 import { Button } from "@/components/ui/button";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
@@ -10,8 +11,6 @@ import { useEffect, useRef, useState } from "react";
 const JobDetailActionButtons = ({
   job,
   profile,
-  analysisRunId,
-  setAnalysisRunId,
 }: {
   job: Job;
   profile: Profile;
@@ -34,14 +33,9 @@ const JobDetailActionButtons = ({
 
     (async () => {
       try {
-        const res = await createAnalysisProcess({
-          job_id: job.id,
-          profile_id: profile.id,
-        });
-        setAnalysisRunId(res.run.id);
+        await analyzeJob(job.id as string, profile.id as string);
       } catch (error) {
         console.error("Error starting analysis process", error);
-        setAnalysisRunId(null);
         setProcessStarted(false);
       }
     })();
@@ -54,14 +48,9 @@ const JobDetailActionButtons = ({
     sessionStorage.removeItem("analysisMode");
 
     try {
-      const res = await createAnalysisProcess({
-        job_id: job.id,
-        profile_id: profile.id,
-      });
-      setAnalysisRunId(res.run.id);
+      await analyzeJob(job.id as string, profile.id as string);
     } catch (error) {
       console.error("Error starting analysis process", error);
-      setAnalysisRunId(null);
       setProcessStarted(false);
     }
   };
@@ -82,9 +71,7 @@ const JobDetailActionButtons = ({
         onClick={
           async () => {
             try {
-              console.log(analysisRunId)
-              const res = await getAnalysisResults(analysisRunId as string);
-              console.log("Viewing analysis results:", res);
+              await getExistingAnalysis(job.id as string, profile.id as string);
             }
             catch {
               console.error("Error viewing analysis");
