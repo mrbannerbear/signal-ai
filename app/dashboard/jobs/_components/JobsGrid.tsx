@@ -5,6 +5,7 @@ import { JobCard } from "./JobCard";
 import { Job } from "@/schemas/jobs.schema";
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 const JobsGrid = ({
   jobs,
@@ -14,6 +15,7 @@ const JobsGrid = ({
   isAnalysis?: boolean;
 }) => {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const router = useRouter();
 
   const selectedJob = useMemo(
     () => jobs.find((j) => j.id === selectedJobId),
@@ -54,18 +56,18 @@ const JobsGrid = ({
 
       {isAnalysis && selectedJobId && (
         <div className="col-span-full mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <Link
-            href={`/dashboard/jobs/${selectedJobId}?mode=analysis+new`}
-            className="w-full sm:w-auto"
-          >
-            <Button className="w-full rounded-xl font-bold px-8 py-6 shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform hover:scale-105 active:scale-95">
-              Compare With Your Profile
-            </Button>
-          </Link>
+          <Button 
+          onClick={() => {
+            sessionStorage.setItem("analysisMode", "true");
+            router.push(`/dashboard/jobs/${selectedJobId}`)
+          }}
+          className="w-full rounded-xl font-bold px-8 py-6 shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform hover:scale-105 active:scale-95">
+            Compare With Your Profile
+          </Button>
 
           {selectedJob?.is_analyzed ? (
             <Link
-              href={`/dashboard/jobs/${selectedJobId}?mode=analysis+new`}
+              href={`/dashboard/jobs/${selectedJobId}?mode=analysis+saved`}
               className="w-full sm:w-auto"
             >
               <Button className="w-full rounded-xl font-bold px-8 py-6 shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 text-white transition-all transform hover:scale-105 active:scale-95">
@@ -73,17 +75,12 @@ const JobsGrid = ({
               </Button>
             </Link>
           ) : (
-            <Link
-              href={`/dashboard/jobs/${selectedJobId}?mode=analysis+saved`}
-              className="w-full sm:w-auto"
+            <Button
+              disabled
+              className="w-full sm:w-auto rounded-xl font-bold px-8 py-6 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
             >
-              <Button
-                disabled
-                className="w-full sm:w-auto rounded-xl font-bold px-8 py-6 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-              >
-                View Analysis
-              </Button>
-            </Link>
+              View Analysis
+            </Button>
           )}
         </div>
       )}

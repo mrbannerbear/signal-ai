@@ -6,7 +6,7 @@ import {
   CreateAnalysisRunSchema,
 } from "@/schemas/analysis.schema";
 import getUserOnServer from "@/utils/getUserOnServer";
-import { AnalysisSection } from "./../schemas/analysis.schema";
+import { AnalysisSection } from "../schemas/analysis.schema";
 import { GoogleGenAI } from "@google/genai";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
@@ -63,8 +63,10 @@ export const performLLMAnalysis = async (
   profileId: string | null,
   section: AnalysisSection,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  externalSupabase?: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  const supabase = await createClient();
+  const supabase = externalSupabase ?? (await createClient());
 
   const { data: job, error: jobError } = await supabase
     .from("jobs")
@@ -157,4 +159,20 @@ ${sectionTaskMap[section]}
 
 Output ONLY valid JSON for section "${section}".
 `;
+}
+
+
+export async function getAnalysisResults(analysisRunId : string) {
+  const supabase = await createClient();
+  const { data: results, error } = await supabase
+    .from("analysis_result")
+    .select("*")
+    .eq("analysis_run_id", analysisRunId);
+
+  if (error) {
+    console.error("Error fetching analysis results:", error);
+    throw error;
+  }
+
+  return results;
 }
