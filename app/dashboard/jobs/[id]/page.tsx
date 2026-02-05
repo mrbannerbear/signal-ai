@@ -28,6 +28,13 @@ export default async function JobDetailPage({
     .eq("user_id", user.id)
     .single<Profile>();
 
+  const { data: existingAnalysis } = await supabase
+    .from("analysis")
+    .select("*")
+    .eq("job_id", id)
+    .eq("profile_id", profile?.id)
+    .single();
+
   if (error || !job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -39,5 +46,5 @@ export default async function JobDetailPage({
     );
   }
 
-  return <JobDetailClient job={job} profile={profile} />;
+  return <JobDetailClient job={job} profile={profile} existingAnalysis={existingAnalysis} />;
 }

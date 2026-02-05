@@ -11,6 +11,9 @@ import {
   FileText,
   Pencil,
   ArrowLeft,
+  Trash2,
+  Save,
+  X,
 } from "lucide-react";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
@@ -21,9 +24,15 @@ interface JobHeaderProps {
   isAnalyzing: boolean;
   hasAnalysis: boolean;
   showAnalysis: boolean;
+  isEditing: boolean;
+  isSaving: boolean;
+  isDeleting: boolean;
   onCompare: () => void;
   onToggleAnalysis: () => void;
   onEdit: () => void;
+  onSave: () => void;
+  onCancelEdit: () => void;
+  onDelete: () => void;
   onBackToJob: () => void;
 }
 
@@ -33,9 +42,15 @@ export default function JobHeader({
   isAnalyzing,
   hasAnalysis,
   showAnalysis,
+  isEditing,
+  isSaving,
+  isDeleting,
   onCompare,
   onToggleAnalysis,
   onEdit,
+  onSave,
+  onCancelEdit,
+  onDelete,
   onBackToJob,
 }: JobHeaderProps) {
   return (
@@ -81,7 +96,42 @@ export default function JobHeader({
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2">
-          {showAnalysis ? (
+          {isEditing ? (
+            <>
+              <button
+                onClick={onSave}
+                disabled={isSaving}
+                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                onClick={onCancelEdit}
+                disabled={isSaving}
+                className="flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+              >
+                <X className="h-4 w-4" />
+                Cancel
+              </button>
+              <button
+                onClick={onDelete}
+                disabled={isDeleting}
+                className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </>
+          ) : showAnalysis ? (
             <button
               onClick={onBackToJob}
               className="flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
@@ -114,14 +164,16 @@ export default function JobHeader({
             </>
           )}
 
-          <button
-            onClick={onToggleAnalysis}
-            disabled={!hasAnalysis}
-            className="flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <FileText className="h-4 w-4" />
-            {showAnalysis ? "Hide Analysis" : "See Analysis"}
-          </button>
+          {!isEditing && (
+            <button
+              onClick={onToggleAnalysis}
+              disabled={!hasAnalysis}
+              className="flex items-center gap-2 rounded-lg border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FileText className="h-4 w-4" />
+              {showAnalysis ? "Hide Analysis" : "See Analysis"}
+            </button>
+          )}
         </div>
       </div>
     </div>
