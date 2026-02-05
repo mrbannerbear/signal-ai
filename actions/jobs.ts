@@ -98,3 +98,91 @@ export const getJobById = async (id: string) => {
     profile: profileRes.data,
   };
 };
+
+export const updateJob = async (
+  id: string,
+  values: Partial<Job>
+): Promise<ActionResponse> => {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      message: "User not authenticated",
+    };
+  }
+
+  // Validate partial update - only validate provided fields
+  const partialSchema = jobSchema.partial();
+  const validation = partialSchema.safeParse(values);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: "Validation failed",
+      errors: validation.error.flatten().fieldErrors as Record<
+        string,
+        string[]
+      >,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .update(validation.data)
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single();
+
+  if (error || !data) {
+    return {
+      success: false,
+      message: error?.message || "Failed to update job",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Job updated successfully",
+    id: data.id,
+  };
+};
+
+export const deleteJob = async (id: string): Promise<ActionResponse> => {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      message: "User not authenticated",
+    };
+  }
+
+  const { error } = await supabase
+    .from("jobs")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return {
+      success: false,
+      message: error?.message || "Failed to delete job",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Job deleted successfully",
+  };
+};
