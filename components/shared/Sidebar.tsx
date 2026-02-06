@@ -11,8 +11,10 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { signOut } from "@/actions/account";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -50,7 +52,7 @@ export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
 
       {/* The Analyze CTA */}
       <div className="px-4 mb-6">
-        <Link href={'/dashboard/jobs?analysis=true'}>
+        <Link href={"/dashboard/jobs?analysis=true"}>
           <Button
             className={cn(
               "w-full bg-slate-900 text-white hover:bg-indigo-600 transition-all duration-300 shadow-sm",
@@ -118,6 +120,21 @@ export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
             <span className="ml-3 font-medium text-sm">Settings</span>
           )}
         </Link>
+
+        <Button
+          onClick={async () => {
+            await signOut();
+          }}
+          className={cn(
+            "flex items-center justify-start text-slate-500 hover:text-slate-900 rounded-xl transition-all mt-2 bg-transparent w-full cursor-pointer hover:bg-slate-50",
+            isCollapsed ? "justify-center h-12" : "px-4 h-11 hover:bg-slate-50",
+          )}
+        >
+          <LogOut />
+          {!isCollapsed && (
+            <span className="ml-3 font-medium text-sm">Log Out</span>
+          )}
+        </Button>
       </div>
 
       {/* Toggle Button */}
