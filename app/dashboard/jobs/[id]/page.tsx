@@ -46,5 +46,11 @@ export default async function JobDetailPage({
     );
   }
 
-  return <JobDetailClient job={job} profile={profile} existingAnalysis={existingAnalysis} />;
+  return (
+    <JobDetailClient
+      job={job}
+      profile={profile}
+      existingAnalysis={existingAnalysis?.content ?? null}
+    />
+  );
 }
