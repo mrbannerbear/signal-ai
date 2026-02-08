@@ -167,6 +167,10 @@ export async function analyzeJob(
 
   if (upsertError) {
     console.error("Failed to save analysis:", upsertError);
+  } else {
+    // Revalidate dashboard to update insights
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/dashboard");
   }
 
   return content;
