@@ -25,6 +25,8 @@ export const jobSchema = z.object({
   skills: z.array(z.string()).min(1, "At least one skill is required"),
   other_benefits: z.string().optional(),
   posted_date: z.string().optional(),
+  is_analyzed: z.boolean().optional(),
+  has_applied: z.boolean().optional(),
 });
 
 export type Job = z.infer<typeof jobSchema>;

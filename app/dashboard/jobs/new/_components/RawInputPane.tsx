@@ -25,7 +25,6 @@ export function RawInputPane({
       e.preventDefault();
       try {
         const jobText = await formatJobData(rawText);
-        console.log("Fetched Job Text:", jobText);
         setStructuredData(jobText);
       } catch (error) {
           console.error("Error fetching job text:", error);

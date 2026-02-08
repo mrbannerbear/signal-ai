@@ -87,9 +87,7 @@ export function StructuredForm({
     setIsSubmitting(true);
     try {
       const result = await createJob(values);
-      console.log("createJob result:", result);
       if (result.success) {
-        console.log("Job created with ID:", result.id);
         router.push(`/dashboard/jobs/${result.id}`);
       } else {
         if (result.errors) {
