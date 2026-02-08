@@ -200,23 +200,10 @@ export const deleteAccount = async (password: string): Promise<ActionResponse> =
     }
   }
 
-  // Delete user data in order (respecting foreign key constraints)
-  // 1. Delete analysis results
   await supabase.from("analysis_results").delete().eq("user_id", user.id);
-
-  // 2. Delete jobs
   await supabase.from("jobs").delete().eq("user_id", user.id);
-
-  // 3. Delete resumes
   await supabase.from("resumes").delete().eq("user_id", user.id);
-
-  // 4. Delete profile
   await supabase.from("profiles").delete().eq("user_id", user.id);
-
-  // 5. Delete the auth user using admin API or RPC
-  // Note: This requires either a database function or service role key
-  // For now, we'll use the user's own session to request deletion
-  // In production, you'd want a server-side function with admin privileges
   
   // Sign out the user
   await supabase.auth.signOut();
