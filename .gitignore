@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# essential-docs folder and all files inside it
-/essential-docs/*
+# essential_docs folder and all files inside it
+/essential_docs/
