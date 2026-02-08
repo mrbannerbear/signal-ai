@@ -1,184 +1,224 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { Sparkles, Target, TrendingUp, Zap, ChevronRight, CheckCircle } from "lucide-react";
+import { ArrowRight, Sparkles, CheckCircle2, AlertCircle, BarChart3, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Signal AI - Job Fit Analysis Powered by AI",
-  description: "Analyze job postings against your profile with AI. Get personalized insights, skill gap analysis, and actionable recommendations.",
-  keywords: ["job analysis", "career insights", "AI", "job matching", "skill gap"],
-  openGraph: {
-    title: "Signal AI - Job Fit Analysis Powered by AI",
-    description: "Analyze job postings against your profile with AI.",
-    type: "website",
-  },
+  title: "Signal AI – Career intelligence, amplified.",
+  description:
+    "Data-driven job analysis for the modern professional. Assess fit, identify gaps, and strategize your next move with precision.",
 };
-
-const features = [
-  {
-    icon: Target,
-    title: "Smart Job Matching",
-    description: "AI analyzes job requirements against your skills and experience.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Skill Gap Analysis",
-    description: "Identify missing skills and get recommendations to bridge the gap.",
-  },
-  {
-    icon: Zap,
-    title: "Instant Insights",
-    description: "Get detailed fit scores and actionable feedback in seconds.",
-  },
-];
-
-const benefits = [
-  "AI-powered fit scoring",
-  "Resume optimization tips",
-  "Interview preparation angles",
-  "Risk assessment",
-];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-primary/20">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <nav className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-slate-900">
-            <Sparkles className="w-6 h-6 text-indigo-600" aria-hidden="true" />
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+        <nav className="container-narrow h-16 flex items-center justify-between" aria-label="Main navigation">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-base font-semibold text-foreground tracking-tight hover:opacity-80 transition-opacity"
+            aria-label="Signal AI Home"
+          >
+            <div className="size-6 bg-primary rounded-sm flex items-center justify-center text-primary-foreground">
+              <Sparkles className="size-3.5" aria-hidden="true" />
+            </div>
             <span>Signal AI</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link
-              href="/auth"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-3 py-2"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/auth"
-              className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full transition-colors"
-            >
-              Get Started
-            </Link>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+              <Link href="/auth">Sign in</Link>
+            </Button>
+            <Button size="sm" className="font-medium" asChild>
+              <Link href="/auth">Get started</Link>
+            </Button>
           </div>
         </nav>
       </header>
 
-      <main>
-        {/* Hero Section */}
-        <section className="py-16 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-              Know Your Fit{" "}
-              <span className="text-indigo-600">Before You Apply</span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              AI-powered job analysis that compares opportunities against your profile. 
-              Get personalized insights, skill gaps, and actionable recommendations.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/auth"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-4 rounded-full text-lg transition-colors shadow-lg shadow-indigo-500/20"
-              >
-                Start Free Analysis
-                <ChevronRight className="w-5 h-5" aria-hidden="true" />
-              </Link>
-              <Link
-                href="#features"
-                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-900 font-semibold px-8 py-4 rounded-full text-lg transition-colors border border-slate-200"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                How It Works
-              </h2>
-              <p className="mt-4 text-lg text-slate-600 max-w-xl mx-auto">
-                Three simple steps to understand your job fit
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="relative border-b border-border/40 overflow-hidden" aria-labelledby="hero-title">
+          <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" aria-hidden="true" />
+          
+          <div className="container-narrow relative py-20 sm:py-32 lg:py-40">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground mb-6 backdrop-blur-sm">
+                <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+                <span>v2.0 Analysis Engine is live</span>
+              </div>
+              
+              <h1 id="hero-title" className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground tracking-tight leading-[1.1]">
+                Career intelligence, <br />
+                <span className="text-muted-foreground">amplified.</span>
+              </h1>
+              
+              <p className="mt-6 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl">
+                Stop guessing. Signal AI analyzes job postings against your
+                unique profile to provide data-driven fit scores, skill gap
+                detection, and strategic interview angles.
               </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <article
-                  key={feature.title}
-                  className="bg-slate-50 rounded-3xl p-8 border border-slate-100 hover:shadow-lg transition-shadow"
-                >
-                  <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6">
-                    <feature.icon className="w-7 h-7 text-indigo-600" aria-hidden="true" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">
-                    {index + 1}. {feature.title}
-                  </h3>
-                  <p className="text-slate-600 leading-relaxed">{feature.description}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Benefits Section */}
-        <section className="py-16 sm:py-24 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-3xl p-8 sm:p-12 text-white">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
-                    Everything you need to make informed decisions
-                  </h2>
-                  <p className="mt-4 text-indigo-100 text-lg">
-                    Stop guessing. Start knowing.
-                  </p>
+              
+              <div className="mt-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <Button size="xl" className="font-medium px-8 shadow-sm group" asChild>
+                  <Link href="/auth" aria-label="Start job analysis">
+                    Analyze a job
+                    <ArrowRight className="ml-2 size-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                  </Link>
+                </Button>
+                <div className="text-sm text-muted-foreground px-2 flex items-center gap-2">
+                  <Lock className="size-3.5 text-muted-foreground/70" aria-hidden="true" />
+                  No credit card required · Private & secure
                 </div>
-                <ul className="space-y-4">
-                  {benefits.map((benefit) => (
-                    <li key={benefit} className="flex items-center gap-3 text-lg">
-                      <CheckCircle className="w-6 h-6 text-emerald-400 shrink-0" aria-hidden="true" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              Ready to find your perfect fit?
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Join thousands of job seekers making smarter career decisions.
-            </p>
-            <Link
-              href="/auth"
-              className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-4 rounded-full text-lg transition-colors shadow-lg shadow-indigo-500/20 mt-8"
-            >
-              Get Started Free
-              <ChevronRight className="w-5 h-5" aria-hidden="true" />
-            </Link>
+        {/* Feature Grid - Brutalist / Editorial */}
+        <section className="border-b border-border/40 bg-muted/20" aria-labelledby="features-title">
+          <div className="container-narrow py-20 sm:py-24">
+            <h2 id="features-title" className="sr-only">Key Features</h2>
+            <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x border border-border rounded-xl bg-card overflow-hidden shadow-sm">
+              {[
+                {
+                  title: "Precision Matching",
+                  desc: "Our engine parses 50+ data points to calculate your exact fit score.",
+                },
+                {
+                  title: "Skill Gap Detection",
+                  desc: "Identify missing keywords and requirements before HR does.",
+                },
+                {
+                  title: "Interview Strategy",
+                  desc: "Get tailored talking points to turn weaknesses into strengths.",
+                },
+              ].map((item, i) => (
+                <div key={i} className="p-8 hover:bg-muted/10 transition-colors group">
+                  <div className="size-8 rounded-md bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                    <span className="font-mono text-sm font-medium">0{i + 1}</span>
+                  </div>
+                  <h3 className="text-lg font-medium text-foreground tracking-tight mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Live Analysis Preview Section */}
+        <section className="py-24 sm:py-32 overflow-hidden" aria-labelledby="preview-title">
+          <div className="container-narrow">
+            <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-primary/5 text-primary text-xs font-medium mb-6">
+                  <BarChart3 className="size-3.5" aria-hidden="true" />
+                  <span>Live Preview</span>
+                </div>
+                <h2 id="preview-title" className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-6">
+                  See what they see.
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                  Recruiters spend 7 seconds on your resume. Signal AI gives you the
+                  full picture in milliseconds. We simulate the ATS screening process
+                  to show you exactly where you stand.
+                </p>
+                
+                <div className="space-y-4">
+                  {[
+                    { icon: CheckCircle2, text: "Keyword optimization check", color: "text-emerald-600" },
+                    { icon: AlertCircle, text: "Missing requirements alert", color: "text-amber-600" },
+                    { icon: Sparkles, text: "AI-generated improvement tips", color: "text-primary" },
+                  ].map((feature, i) => (
+                    <div key={i} className="flex gap-3 items-start p-3 rounded-lg border border-border/40 hover:bg-muted/30 transition-colors">
+                      <feature.icon className={`size-5 ${feature.color} shrink-0 mt-0.5`} aria-hidden="true" />
+                      <span className="text-foreground font-medium text-sm sm:text-base">{feature.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-10 flex gap-4">
+                  <Button size="lg" asChild>
+                    <Link href="/auth">Start free scan</Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild>
+                    <Link href="#pricing">View pricing</Link>
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Report Card Visual */}
+              <div className="relative" aria-hidden="true">
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/5 to-transparent rounded-[2rem] blur-2xl opacity-50" />
+                <div className="relative bg-card border border-border rounded-xl shadow-2xl p-6 sm:p-8 max-w-md mx-auto rotate-1 hover:rotate-0 transition-transform duration-500 ease-out">
+                  {/* Fake UI Header */}
+                  <div className="flex items-center justify-between mb-8 pb-6 border-b border-border/40">
+                    <div>
+                      <div className="h-2 w-20 bg-muted rounded-full mb-2" />
+                      <div className="h-3 w-32 bg-foreground/10 rounded-full" />
+                    </div>
+                    <div className="size-12 rounded-full border-4 border-emerald-500/20 flex items-center justify-center text-emerald-600 font-bold text-lg">
+                      92%
+                    </div>
+                  </div>
+
+                  {/* Fake UI Body */}
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex justify-between mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        <span>Profile Match</span>
+                        <span>High</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted/40 rounded-full overflow-hidden">
+                        <div className="h-full w-[92%] bg-emerald-500 rounded-full" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex gap-3 items-center text-sm">
+                        <div className="size-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+                          <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <span className="text-foreground">7/7 Key Skills Found</span>
+                      </div>
+                      <div className="flex gap-3 items-center text-sm">
+                        <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                          <AlertCircle className="size-3.5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <span className="text-foreground">Seniority Mismatch (Possible)</span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-muted/30 rounded-lg border border-border/40 mt-4">
+                      <div className="h-2 w-24 bg-primary/20 rounded-full mb-3" />
+                      <div className="space-y-2">
+                        <div className="h-1.5 w-full bg-muted rounded-full" />
+                        <div className="h-1.5 w-5/6 bg-muted rounded-full" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-12 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-white font-bold">
-            <Sparkles className="w-5 h-5 text-indigo-400" aria-hidden="true" />
-            <span>Signal AI</span>
+      <footer className="border-t border-border bg-background py-12">
+        <div className="container-narrow flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <div className="size-4 bg-muted-foreground/20 rounded-sm" />
+            <span>© 2026 Signal AI Inc.</span>
           </div>
-          <p className="text-sm">© 2026 Signal AI. All rights reserved.</p>
+          <nav className="flex gap-8 text-sm text-muted-foreground" aria-label="Footer navigation">
+            <Link href="#" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">Terms of Service</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">Contact</Link>
+          </nav>
         </div>
       </footer>
     </div>
