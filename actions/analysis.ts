@@ -234,6 +234,9 @@ Analyze this job posting ${profile ? "against the candidate's profile" : ""} and
 IMPORTANT: Return ONLY a valid JSON object matching this exact structure (no markdown, no code blocks):
 {
   "analysisSummary": "string - 2-3 sentence executive summary",
+  "top_strengths": ["array of 3-5 specific strengths"],
+  "top_weaknesses": ["array of 3-5 specific areas to improve"],
+   "gaps": {
   "summary": {
     "overview": "string",
     "keyPoints": ["string array"]

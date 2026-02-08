@@ -12,6 +12,8 @@ export const analysisSchema = z.object({
   risk_level: z.enum(["low", "medium", "high"]).nullable(),
   confidence: z.number().min(0).max(100).nullable(),
   dimension_scores: z.record(z.string(), z.number()).nullable(),
+  top_strengths: z.array(z.string()).nullable(),
+  top_weaknesses: z.array(z.string()).nullable(),
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime(),
 });
