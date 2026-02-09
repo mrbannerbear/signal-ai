@@ -152,34 +152,34 @@ export function ProfileForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-10 pb-10">
         
         {/* IDENTITY */}
-        <div className="grid gap-6 p-5 md:p-8 border rounded-3xl bg-card shadow-sm">
-          <h2 className="text-xl font-bold">Identity & Persona</h2>
+        <div className="grid gap-6 p-6 md:p-8 border border-zinc-200 rounded-xl bg-card shadow-xs">
+          <h2 className="text-xl font-semibold text-zinc-900">Identity & Persona</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField control={form.control} name="firstName" render={({ field }) => (
-              <FormItem><FormLabel>First Name</FormLabel><FormControl><Input placeholder="Jane" {...field} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel className="text-zinc-700">First Name</FormLabel><FormControl><Input placeholder="Jane" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="lastName" render={({ field }) => (
-              <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
+              <FormItem><FormLabel className="text-zinc-700">Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl><FormMessage /></FormItem>
             )} />
           </div>
           <FormField control={form.control} name="headline" render={({ field }) => (
-            <FormItem><FormLabel>Headline</FormLabel><FormControl><Input placeholder="e.g. Senior Fullstack Developer" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel className="text-zinc-700">Headline</FormLabel><FormControl><Input placeholder="e.g. Senior Fullstack Developer" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="bio" render={({ field }) => (
-            <FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea placeholder="Tell us about yourself..." className="min-h-25" {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel className="text-zinc-700">Bio</FormLabel><FormControl><Textarea placeholder="Tell us about yourself..." className="min-h-25 rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
         </div>
 
         {/* LINKS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <FormField control={form.control} name="location" render={({ field }) => (
-            <FormItem><FormLabel className="flex gap-2"><MapPin className="w-4 h-4"/> Location</FormLabel><FormControl><Input placeholder="San Francisco, CA" {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel className="flex gap-2 text-zinc-700"><MapPin className="w-4 h-4 text-emerald-500"/> Location</FormLabel><FormControl><Input placeholder="San Francisco, CA" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
           <FormField control={form.control} name="portfolioUrl" render={({ field }) => (
-            <FormItem><FormLabel className="flex gap-2"><Globe className="w-4 h-4"/> Portfolio</FormLabel><FormControl><Input placeholder="https://portfolio.com" {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel className="flex gap-2 text-zinc-700"><Globe className="w-4 h-4 text-emerald-500"/> Portfolio</FormLabel><FormControl><Input placeholder="https://portfolio.com" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
           <FormField control={form.control} name="linkedinUrl" render={({ field }) => (
-            <FormItem><FormLabel>LinkedIn</FormLabel><FormControl><Input placeholder="https://linkedin.com/in/jane" {...field} /></FormControl></FormItem>
+            <FormItem><FormLabel className="text-zinc-700">LinkedIn</FormLabel><FormControl><Input placeholder="https://linkedin.com/in/jane" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
         </div>
 
@@ -195,12 +195,12 @@ export function ProfileForm({
                type="button" 
                variant="outline" 
                onClick={onCancel}
-               className="w-full md:flex-1 h-12 md:h-14 text-base md:text-lg font-bold rounded-2xl uppercase border-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+               className="w-full md:flex-1 h-12 md:h-14 text-base md:text-lg font-semibold rounded-xl uppercase border-2 text-zinc-500 hover:text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200 transition-colors"
               >
                Cancel
              </Button>
           )}
-          <Button type="submit" disabled={isPending} className="w-full md:flex-2 h-12 md:h-14 text-base md:text-lg font-black rounded-2xl uppercase shadow-xl shadow-indigo-200 hover:shadow-indigo-100 transition-all bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button type="submit" disabled={isPending} className="w-full md:flex-2 h-12 md:h-14 text-base md:text-lg font-bold rounded-xl uppercase shadow-xl shadow-zinc-200/50 hover:shadow-zinc-200 transition-all bg-zinc-900 hover:bg-zinc-800 text-white">
             {isPending ? <><Loader2 className="mr-2 animate-spin" /> Saving...</> : "Save Profile"}
           </Button>
         </div>

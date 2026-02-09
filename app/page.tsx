@@ -9,7 +9,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import getUserOnServer from "@/utils/getUserOnServer";
+import { createClient } from "./lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Signal AI – Career intelligence, amplified.",
@@ -18,7 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
-  const user = await getUserOnServer(false);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-primary/20">
       {/* Header */}
@@ -225,7 +228,7 @@ export default async function LandingPage() {
                   </Button>
                 </div>
               </div>
- 
+
               {/* Report Card Visual */}
               <div className="relative" aria-hidden="true">
                 <div className="absolute -inset-4 bg-linear-to-r from-primary/20 via-primary/5 to-transparent rounded-4xl blur-2xl opacity-50" />

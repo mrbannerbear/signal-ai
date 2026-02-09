@@ -54,18 +54,18 @@ export const ProfilePageContent = ({
       {/* Edit Mode Header */}
       <div className="flex flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-900">
             {isFirstTime ? "Let's Build Your Profile" : "Edit Profile"}
           </h1>
-          <p className="text-slate-500 mt-2">
+          <p className="text-zinc-500 mt-2">
             {isFirstTime 
               ? "Import your resume to get started instantly, or fill it out manually." 
               : "Update your details or import a new resume to refresh your data."}
           </p>
         </div>
         {!isFirstTime && (
-          <Button variant="ghost" size="icon" onClick={handleCancel} className="rounded-full">
-            <X size={24} className="text-slate-400 hover:text-slate-700" />
+          <Button variant="ghost" size="icon" onClick={handleCancel} className="rounded-lg">
+            <X size={24} className="text-zinc-400 hover:text-zinc-700" />
           </Button>
         )}
       </div>

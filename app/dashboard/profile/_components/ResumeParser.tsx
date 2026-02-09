@@ -96,7 +96,7 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
   };
 
   return (
-    <Card className={`overflow-hidden transition-all duration-500 px-4 md:px-6 lg:px-8 ${layout === "row" ? "bg-white border text-left shadow-sm" : "border-dashed border-2 bg-slate-50/50"}`}>
+    <Card className={`overflow-hidden transition-all duration-500 px-4 md:px-6 lg:px-8 ${layout === "row" ? "bg-white border text-left shadow-xs" : "border-dashed border-2 bg-zinc-50/50"}`}>
       <CardContent className={`${layout === "row" ? "p-0" : "p-8"}`}>
         <AnimatePresence mode="wait">
           {status === "idle" && (
@@ -109,13 +109,13 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
               {layout === "row" ? (
                  <>
                    <div className="flex-1 space-y-2 w-full">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-2">
+                      <div className="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-900 flex items-center justify-center mb-2">
                         <Sparkles size={24} />
                       </div>
-                      <h3 className="text-lg md:text-xl font-bold text-slate-900">
+                      <h3 className="text-lg md:text-xl font-semibold text-zinc-900">
                         Auto-Fill with AI
                       </h3>
-                      <p className="text-slate-600 leading-relaxed max-w-md text-sm md:text-base">
+                      <p className="text-zinc-600 leading-relaxed max-w-md text-sm md:text-base">
                         Have a resume ready? Upload it here and we&apos;ll extract your details to populate the form below instantly.
                       </p>
                   </div>
@@ -123,7 +123,7 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                     <Button
                       onClick={handleUpload}
                       size="lg"
-                      className="w-full md:w-auto rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 font-bold px-8 h-12"
+                      className="w-full md:w-auto rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white shadow-sm font-medium px-8 h-12"
                     >
                       <Upload className="mr-2 w-5 h-5" />
                       Upload Resume
@@ -135,9 +135,9 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                   <Button
                     onClick={handleUpload}
                     variant="outline"
-                    className="rounded-xl border-slate-200 bg-white"
+                    className="rounded-lg border-zinc-200 bg-white"
                   >
-                    <Upload className="text-indigo-600 w-8 h-8" />
+                    <Upload className="text-zinc-900 w-8 h-8" />
                     Select PDF File
                   </Button>
                 </>
