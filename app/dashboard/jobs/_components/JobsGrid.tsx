@@ -25,9 +25,9 @@ const JobsGrid = ({
   if (jobs.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="mb-4 text-slate-500">No jobs found.</p>
+        <p className="mb-4 text-zinc-500">No jobs found.</p>
         <Link href="/dashboard/jobs/new">
-          <Button className="rounded-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Button className="rounded-xl font-bold shadow-lg shadow-zinc-200/50 bg-zinc-900 hover:bg-zinc-800 text-white">
             Post a New Job
           </Button>
         </Link>
@@ -61,7 +61,7 @@ const JobsGrid = ({
             sessionStorage.setItem("analysisMode", "true");
             router.push(`/dashboard/jobs/${selectedJobId}`)
           }}
-          className="w-full rounded-xl font-bold px-8 py-6 shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white transition-all transform hover:scale-105 active:scale-95">
+          className="w-full rounded-xl font-bold px-8 py-6 shadow-lg shadow-zinc-200/50 bg-zinc-900 hover:bg-zinc-800 text-white transition-all transform hover:scale-105 active:scale-95">
             Compare With Your Profile
           </Button>
 
@@ -77,7 +77,7 @@ const JobsGrid = ({
           ) : (
             <Button
               disabled
-              className="w-full sm:w-auto rounded-xl font-bold px-8 py-6 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+              className="w-full sm:w-auto rounded-xl font-bold px-8 py-6 bg-zinc-100 text-zinc-400 cursor-not-allowed border border-zinc-200"
             >
               View Analysis
             </Button>

@@ -118,7 +118,7 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                 key={i}
                 className="relative pl-6 md:pl-8 border-l-2 border-zinc-200 last:border-0 ml-2"
               >
-                <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-zinc-200" />
+                <div className="absolute -left-2.25 top-1.5 w-4 h-4 rounded-full bg-white border-4 border-zinc-200" />
                 
                 <div>
                   <div className="flex flex-col md:flex-row md:justify-between md:items-baseline mb-2 gap-1">

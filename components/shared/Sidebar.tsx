@@ -159,7 +159,7 @@ export function Sidebar({ isCollapsed, isMobileOpen, toggle, closeMobile }: Side
       {/* Toggle Button (Desktop Only) */}
       <button
         onClick={toggle}
-        className="absolute -right-3 top-[3.5rem] bg-white text-zinc-400 rounded-full p-1 border border-zinc-200 shadow-sm hover:text-zinc-900 transition-colors hidden md:flex items-center justify-center h-6 w-6 z-50"
+        className="absolute -right-3 top-14 bg-white text-zinc-400 rounded-full p-1 border border-zinc-200 shadow-sm hover:text-zinc-900 transition-colors hidden md:flex items-center justify-center h-6 w-6 z-50"
       >
         {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
