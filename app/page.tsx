@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { Metadata } from "next";
-import { ArrowRight, Sparkles, CheckCircle2, AlertCircle, BarChart3, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  BarChart3,
+  Lock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import getUserOnServer from "@/utils/getUserOnServer";
 
 export const metadata: Metadata = {
   title: "Signal AI – Career intelligence, amplified.",
@@ -9,12 +17,16 @@ export const metadata: Metadata = {
     "Data-driven job analysis for the modern professional. Assess fit, identify gaps, and strategize your next move with precision.",
 };
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const user = await getUserOnServer(false);
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans selection:bg-primary/20">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <nav className="container-narrow h-16 flex items-center justify-between" aria-label="Main navigation">
+      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/60">
+        <nav
+          className="container-narrow h-16 flex items-center justify-between"
+          aria-label="Main navigation"
+        >
           <Link
             href="/"
             className="flex items-center gap-2 text-base font-semibold text-foreground tracking-tight hover:opacity-80 transition-opacity"
@@ -26,48 +38,78 @@ export default function LandingPage() {
             <span>Signal AI</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-              <Link href="/auth">Sign in</Link>
-            </Button>
-            <Button size="sm" className="font-medium" asChild>
-              <Link href="/auth">Get started</Link>
-            </Button>
+            {user ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-medium"
+                asChild
+              >
+                <Link href="/dashboard">Go to Dashboard</Link>
+              </Button>
+            ) : (
+              <Button size="sm" className="font-medium" asChild>
+                <Link href="/auth">Get started</Link>
+              </Button>
+            )}
           </div>
         </nav>
       </header>
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative border-b border-border/40 overflow-hidden" aria-labelledby="hero-title">
-          <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" aria-hidden="true" />
-          
+        <section
+          className="relative border-b border-border/40 overflow-hidden"
+          aria-labelledby="hero-title"
+        >
+          <div
+            className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none"
+            aria-hidden="true"
+          />
+
           <div className="container-narrow relative py-20 sm:py-32 lg:py-40">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground mb-6 backdrop-blur-sm">
-                <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+                <span
+                  className="flex size-2 rounded-full bg-emerald-500 animate-pulse"
+                  aria-hidden="true"
+                />
                 <span>v2.0 Analysis Engine is live</span>
               </div>
-              
-              <h1 id="hero-title" className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground tracking-tight leading-[1.1]">
+
+              <h1
+                id="hero-title"
+                className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground tracking-tight leading-[1.1]"
+              >
                 Career intelligence, <br />
                 <span className="text-muted-foreground">amplified.</span>
               </h1>
-              
+
               <p className="mt-6 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-xl">
                 Stop guessing. Signal AI analyzes job postings against your
                 unique profile to provide data-driven fit scores, skill gap
                 detection, and strategic interview angles.
               </p>
-              
+
               <div className="mt-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <Button size="xl" className="font-medium px-8 shadow-sm group" asChild>
+                <Button
+                  size="xl"
+                  className="font-medium px-8 shadow-sm group"
+                  asChild
+                >
                   <Link href="/auth" aria-label="Start job analysis">
                     Analyze a job
-                    <ArrowRight className="ml-2 size-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                    <ArrowRight
+                      className="ml-2 size-4 group-hover:translate-x-0.5 transition-transform"
+                      aria-hidden="true"
+                    />
                   </Link>
                 </Button>
                 <div className="text-sm text-muted-foreground px-2 flex items-center gap-2">
-                  <Lock className="size-3.5 text-muted-foreground/70" aria-hidden="true" />
+                  <Lock
+                    className="size-3.5 text-muted-foreground/70"
+                    aria-hidden="true"
+                  />
                   No credit card required · Private & secure
                 </div>
               </div>
@@ -76,9 +118,14 @@ export default function LandingPage() {
         </section>
 
         {/* Feature Grid - Brutalist / Editorial */}
-        <section className="border-b border-border/40 bg-muted/20" aria-labelledby="features-title">
+        <section
+          className="border-b border-border/40 bg-muted/20"
+          aria-labelledby="features-title"
+        >
           <div className="container-narrow py-20 sm:py-24">
-            <h2 id="features-title" className="sr-only">Key Features</h2>
+            <h2 id="features-title" className="sr-only">
+              Key Features
+            </h2>
             <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x border border-border rounded-xl bg-card overflow-hidden shadow-sm">
               {[
                 {
@@ -94,9 +141,14 @@ export default function LandingPage() {
                   desc: "Get tailored talking points to turn weaknesses into strengths.",
                 },
               ].map((item, i) => (
-                <div key={i} className="p-8 hover:bg-muted/10 transition-colors group">
+                <div
+                  key={i}
+                  className="p-8 hover:bg-muted/10 transition-colors group"
+                >
                   <div className="size-8 rounded-md bg-muted flex items-center justify-center text-muted-foreground mb-4 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                    <span className="font-mono text-sm font-medium">0{i + 1}</span>
+                    <span className="font-mono text-sm font-medium">
+                      0{i + 1}
+                    </span>
                   </div>
                   <h3 className="text-lg font-medium text-foreground tracking-tight mb-2">
                     {item.title}
@@ -111,7 +163,10 @@ export default function LandingPage() {
         </section>
 
         {/* Live Analysis Preview Section */}
-        <section className="py-24 sm:py-32 overflow-hidden" aria-labelledby="preview-title">
+        <section
+          className="py-24 sm:py-32 overflow-hidden"
+          aria-labelledby="preview-title"
+        >
           <div className="container-narrow">
             <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
               <div>
@@ -119,24 +174,47 @@ export default function LandingPage() {
                   <BarChart3 className="size-3.5" aria-hidden="true" />
                   <span>Live Preview</span>
                 </div>
-                <h2 id="preview-title" className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-6">
+                <h2
+                  id="preview-title"
+                  className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-6"
+                >
                   See what they see.
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                  Recruiters spend 7 seconds on your resume. Signal AI gives you the
-                  full picture in milliseconds. We simulate the ATS screening process
-                  to show you exactly where you stand.
+                  Recruiters spend 7 seconds on your resume. Signal AI gives you
+                  the full picture in milliseconds. We simulate the ATS
+                  screening process to show you exactly where you stand.
                 </p>
-                
+
                 <div className="space-y-4">
                   {[
-                    { icon: CheckCircle2, text: "Keyword optimization check", color: "text-emerald-600" },
-                    { icon: AlertCircle, text: "Missing requirements alert", color: "text-amber-600" },
-                    { icon: Sparkles, text: "AI-generated improvement tips", color: "text-primary" },
+                    {
+                      icon: CheckCircle2,
+                      text: "Keyword optimization check",
+                      color: "text-emerald-600",
+                    },
+                    {
+                      icon: AlertCircle,
+                      text: "Missing requirements alert",
+                      color: "text-amber-600",
+                    },
+                    {
+                      icon: Sparkles,
+                      text: "AI-generated improvement tips",
+                      color: "text-primary",
+                    },
                   ].map((feature, i) => (
-                    <div key={i} className="flex gap-3 items-start p-3 rounded-lg border border-border/40 hover:bg-muted/30 transition-colors">
-                      <feature.icon className={`size-5 ${feature.color} shrink-0 mt-0.5`} aria-hidden="true" />
-                      <span className="text-foreground font-medium text-sm sm:text-base">{feature.text}</span>
+                    <div
+                      key={i}
+                      className="flex gap-3 items-start p-3 rounded-lg border border-border/40 hover:bg-muted/30 transition-colors"
+                    >
+                      <feature.icon
+                        className={`size-5 ${feature.color} shrink-0 mt-0.5`}
+                        aria-hidden="true"
+                      />
+                      <span className="text-foreground font-medium text-sm sm:text-base">
+                        {feature.text}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -145,15 +223,12 @@ export default function LandingPage() {
                   <Button size="lg" asChild>
                     <Link href="/auth">Start free scan</Link>
                   </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link href="#pricing">View pricing</Link>
-                  </Button>
                 </div>
               </div>
-              
+ 
               {/* Report Card Visual */}
               <div className="relative" aria-hidden="true">
-                <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/5 to-transparent rounded-[2rem] blur-2xl opacity-50" />
+                <div className="absolute -inset-4 bg-linear-to-r from-primary/20 via-primary/5 to-transparent rounded-4xl blur-2xl opacity-50" />
                 <div className="relative bg-card border border-border rounded-xl shadow-2xl p-6 sm:p-8 max-w-md mx-auto rotate-1 hover:rotate-0 transition-transform duration-500 ease-out">
                   {/* Fake UI Header */}
                   <div className="flex items-center justify-between mb-8 pb-6 border-b border-border/40">
@@ -183,13 +258,17 @@ export default function LandingPage() {
                         <div className="size-6 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
                           <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <span className="text-foreground">7/7 Key Skills Found</span>
+                        <span className="text-foreground">
+                          7/7 Key Skills Found
+                        </span>
                       </div>
                       <div className="flex gap-3 items-center text-sm">
                         <div className="size-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
                           <AlertCircle className="size-3.5 text-amber-600 dark:text-amber-400" />
                         </div>
-                        <span className="text-foreground">Seniority Mismatch (Possible)</span>
+                        <span className="text-foreground">
+                          Seniority Mismatch (Possible)
+                        </span>
                       </div>
                     </div>
 
@@ -214,10 +293,19 @@ export default function LandingPage() {
             <div className="size-4 bg-muted-foreground/20 rounded-sm" />
             <span>© 2026 Signal AI Inc.</span>
           </div>
-          <nav className="flex gap-8 text-sm text-muted-foreground" aria-label="Footer navigation">
-            <Link href="#" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">Contact</Link>
+          <nav
+            className="flex gap-8 text-sm text-muted-foreground"
+            aria-label="Footer navigation"
+          >
+            <Link href="#" className="hover:text-foreground transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="#" className="hover:text-foreground transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="#" className="hover:text-foreground transition-colors">
+              Contact
+            </Link>
           </nav>
         </div>
       </footer>

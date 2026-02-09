@@ -1,29 +1,29 @@
 export function Footer() {
   return (
-    <footer className="mt-auto pt-16 pb-8 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <footer className="mt-auto pt-16 pb-8 border-t border-zinc-200 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div className="flex items-center gap-4">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-          © 2026 Signal Engine
+        <span className="text-xs font-medium text-zinc-500">
+          © 2026 Signal AI Inc.
         </span>
         <div className="flex items-center gap-1.5">
-          <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-[10px] text-slate-400 uppercase font-medium">
-            Neural Node Active
+          <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse" />
+          <span className="text-xs text-zinc-500 font-medium">
+            System Operational
           </span>
         </div>
       </div>
 
-      <div className="flex gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-        <a href="#" className="hover:text-indigo-600 transition-colors">
-          Safety
+      <nav className="flex gap-6 text-xs text-zinc-500 font-medium">
+        <a href="#" className="hover:text-zinc-900 transition-colors">
+          Privacy
         </a>
-        <a href="#" className="hover:text-indigo-600 transition-colors">
-          API
+        <a href="#" className="hover:text-zinc-900 transition-colors">
+          Terms
         </a>
-        <a href="#" className="hover:text-indigo-600 transition-colors">
-          Changelog
+        <a href="#" className="hover:text-zinc-900 transition-colors">
+          Help
         </a>
-      </div>
+      </nav>
     </footer>
   );
 }

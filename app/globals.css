@@ -147,3 +147,7 @@
     mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   }
 }
+
+button, link {
+  cursor: pointer;
+}

@@ -25,7 +25,7 @@ export async function getAllUserAnalyses(): Promise<{
     const { data: profile } = await supabase
       .from("profiles")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", user?.id)
       .maybeSingle();
 
     if (!profile?.id) {
@@ -73,7 +73,7 @@ export async function getUserInsights(): Promise<{
     const { data, error } = await supabase
       .from("user_insights")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", user?.id)
       .maybeSingle();
 
     if (error && error.code !== "PGRST116") {
@@ -104,7 +104,7 @@ export async function regenerateInsights(force = false): Promise<{
     const { data: profile } = await supabase
       .from("profiles")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", user?.id)
       .maybeSingle();
 
     // Fetch all analyses
@@ -154,7 +154,7 @@ export async function regenerateInsights(force = false): Promise<{
 
     // Upsert insights
     const insightsData = {
-      user_id: user.id,
+      user_id: user?.id,
       profile_id: profile?.id || null,
       overall_summary: overallSummary,
       aggregated_strengths: uniqueStrengths,
