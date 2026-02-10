@@ -58,7 +58,7 @@ export default function FitScoreChart({ analyses }: Props) {
               itemStyle={{ color: "#fff", fontSize: "12px", padding: 0 }}
               labelStyle={{ display: "none" }}
               cursor={{ fill: "#f5f5f4" }}
-              formatter={(value: number) => [<span key="val" className="font-mono font-bold">{value} jobs</span>, ""]}
+              formatter={(value: number | undefined) => [<span key="val" className="font-mono font-bold">{value ?? 0} jobs</span>, ""]}
             />
             <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={40}>
               {data.map((entry, index) => (

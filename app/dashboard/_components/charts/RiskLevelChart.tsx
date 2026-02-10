@@ -63,7 +63,7 @@ export default function RiskLevelChart({ analyses }: Props) {
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
               }}
               itemStyle={{ color: "#fff", fontSize: "12px", padding: 0 }}
-              formatter={(value: number) => [<span key="val" className="font-mono font-bold">{value} jobs</span>, ""]}
+              formatter={(value: number | undefined) => [<span key="val" className="font-mono font-bold">{value} jobs</span>, ""]}
             />
           </PieChart>
         </ResponsiveContainer>
