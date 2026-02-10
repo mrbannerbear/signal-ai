@@ -19,7 +19,7 @@ export const educationSchema = z.object({
   institution: z.string().min(2, "Institution name is required"),
   degree: z.string().optional().or(z.literal("")),
   start_date: z.coerce.date().optional().nullable(),
-  graduation_date: z.coerce.date().optional().nullable(),
+  end_date: z.coerce.date().optional().nullable(),
   position: z.number().int().default(0),
 });
 

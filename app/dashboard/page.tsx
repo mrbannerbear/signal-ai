@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   // Get profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("firstName, lastName")
+    .select("first_name, last_name")
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardClient
-      userName={profile?.firstName || "User"}
+      userName={profile?.first_name}
       insights={finalInsights}
       analyses={analyses}
       insightsError={insightsError}

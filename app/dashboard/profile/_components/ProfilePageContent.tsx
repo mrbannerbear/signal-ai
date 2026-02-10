@@ -43,7 +43,7 @@ export const ProfilePageContent = ({
     }
   };
 
-  if (!isEditing && initialProfile?.firstName) {
+  if (!isEditing && initialProfile?.first_name) {
     return <ProfileReadView profile={initialProfile} email={email} />;
   }
 

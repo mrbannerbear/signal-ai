@@ -144,20 +144,20 @@ If a field is missing, use an empty string or empty array.
 
 JSON schema:
 {
-  "firstName": "",
-  "lastName": "",
+  "first_name": "",
+  "last_name": "",
   "headline": "",
   "bio": "",
   "location": "",
-  "portfolioUrl": "",
-  "linkedinUrl": "",
+  "portfolio_url": "",
+  "linkedin_url": "",
   "skills": [],
   "experience": [
     {
       "company": "",
       "role": "",
-      "startDate": "",
-      "endDate": "",
+      "start_date": "",
+      "end_date": "",
       "summary": ""
     }
   ],
@@ -165,8 +165,8 @@ JSON schema:
     {
       "institution": "",
       "degree": "",
-      "startDate": "",
-      "endDate": ""
+      "start_date": "",
+      "end_date": ""
     }
   ]
 }

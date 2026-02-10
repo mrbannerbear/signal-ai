@@ -37,11 +37,11 @@ export function ExperienceSection({ control }: { control: any }) {
           className="bg-zinc-50 text-zinc-900 border-zinc-200 hover:bg-zinc-100 rounded-lg shadow-sm"
           onClick={() =>
             append({
-              companyName: "",
+              company_name: "",
               role: "",
-              startDate: new Date(),
-              endDate: null,
-              isCurrent: false,
+              start_date: new Date(),
+              end_date: null,
+              is_current: false,
               description: "",
               location: "",
             })
@@ -53,7 +53,7 @@ export function ExperienceSection({ control }: { control: any }) {
 
       <div className="space-y-4">
         {fields.map((field, index) => {
-          const isCurrent = watchedExperience?.[index]?.isCurrent;
+          const isCurrent = watchedExperience?.[index]?.is_current;
 
           return (
             <div
@@ -74,7 +74,7 @@ export function ExperienceSection({ control }: { control: any }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={control}
-                    name={`experience.${index}.companyName`}
+                    name={`experience.${index}.company_name`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-zinc-700">Company</FormLabel>
@@ -101,7 +101,7 @@ export function ExperienceSection({ control }: { control: any }) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <FormField
                     control={control}
-                    name={`experience.${index}.startDate`}
+                    name={`experience.${index}.start_date`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-zinc-700">Start Date</FormLabel>
@@ -127,7 +127,7 @@ export function ExperienceSection({ control }: { control: any }) {
 
                   <FormField
                     control={control}
-                    name={`experience.${index}.endDate`}
+                    name={`experience.${index}.end_date`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={isCurrent ? "opacity-30 text-zinc-400" : "text-zinc-700"}>
@@ -159,7 +159,7 @@ export function ExperienceSection({ control }: { control: any }) {
                   <div className="pb-3 md:pb-3">
                      <FormField
                       control={control}
-                      name={`experience.${index}.isCurrent`}
+                      name={`experience.${index}.is_current`}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center space-x-2 space-y-0">
                           <FormControl>
@@ -170,7 +170,7 @@ export function ExperienceSection({ control }: { control: any }) {
                                 field.onChange(checked);
                                 if (checked) {
                                   control
-                                    .register(`experience.${index}.endDate`)
+                                    .register(`experience.${index}.end_date`)
                                     .onChange(null);
                                 }
                               }}
@@ -205,7 +205,7 @@ export function ExperienceSection({ control }: { control: any }) {
         {fields.length === 0 && (
           <div className="text-center py-10 border-2 border-dashed border-zinc-200 rounded-xl bg-zinc-50/50">
              <p className="text-zinc-500 text-sm">No experience added yet.</p>
-             <Button variant="link" onClick={() => append({ companyName: "", role: "", startDate: new Date(), endDate: null, isCurrent: false, description: "", location: "" })} className="text-emerald-600">
+             <Button variant="link" onClick={() => append({ company_name: "", role: "", start_date: new Date(), end_date: null, is_current: false, description: "", location: "" })} className="text-emerald-600">
                Add your first role
              </Button>
           </div>

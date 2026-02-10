@@ -8,10 +8,10 @@ interface Props {
 }
 
 const RANGES = [
-  { label: "0-40", min: 0, max: 40, color: "#ef4444" },
-  { label: "41-60", min: 41, max: 60, color: "#f59e0b" },
-  { label: "61-80", min: 61, max: 80, color: "#22c55e" },
-  { label: "81-100", min: 81, max: 100, color: "#10b981" },
+  { label: "0-40", min: 0, max: 40, color: "#ef4444" },   // Red-500
+  { label: "41-60", min: 41, max: 60, color: "#d97706" }, // Amber-600
+  { label: "61-80", min: 61, max: 80, color: "#059669" }, // Emerald-600
+  { label: "81-100", min: 81, max: 100, color: "#10b981" }, // Emerald-500
 ];
 
 export default function FitScoreChart({ analyses }: Props) {
@@ -26,21 +26,41 @@ export default function FitScoreChart({ analyses }: Props) {
   if (analyses.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-      <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-        <span className="w-8 h-1 rounded-full bg-indigo-500" />
+    <div className="bg-card rounded-xl p-6 border border-border/40 shadow-sm h-full flex flex-col">
+      <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2 tracking-tight">
+        <span className="w-1 h-5 rounded-full bg-emerald-500" />
         Fit Score Distribution
       </h3>
-      <div className="h-48">
+      <div className="flex-1 w-full min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-            <YAxis allowDecimals={false} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-            <Tooltip
-              contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0" }}
-              formatter={(value: number) => [`${value} jobs`, "Count"]}
+            <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 11, fill: "#78716c", fontWeight: 500 }} 
+                axisLine={false} 
+                tickLine={false} 
+                dy={10}
             />
-            <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+            <YAxis 
+                allowDecimals={false} 
+                tick={{ fontSize: 11, fill: "#78716c" }} 
+                axisLine={false} 
+                tickLine={false} 
+            />
+            <Tooltip
+              contentStyle={{ 
+                borderRadius: "8px", 
+                border: "none", 
+                backgroundColor: "#18181b", 
+                color: "#fff",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" 
+              }}
+              itemStyle={{ color: "#fff", fontSize: "12px", padding: 0 }}
+              labelStyle={{ display: "none" }}
+              cursor={{ fill: "#f5f5f4" }}
+              formatter={(value: number) => [<span key="val" className="font-mono font-bold">{value} jobs</span>, ""]}
+            />
+            <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={40}>
               {data.map((entry, index) => (
                 <Cell key={index} fill={entry.color} />
               ))}

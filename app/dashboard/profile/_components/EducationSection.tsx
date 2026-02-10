@@ -1,4 +1,3 @@
-// components/profile/EducationSection.tsx
 "use client";
 
 import { useFieldArray, Control } from "react-hook-form";
@@ -6,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, GraduationCap } from "lucide-react";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Card, CardContent } from "@/components/ui/card";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function EducationSection({ control }: { control: Control<any> }) {
@@ -67,7 +65,7 @@ export function EducationSection({ control }: { control: Control<any> }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={control}
-                    name={`education.${index}.startDate`}
+                    name={`education.${index}.start_date`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-zinc-700">Start Date</FormLabel>
@@ -93,7 +91,7 @@ export function EducationSection({ control }: { control: Control<any> }) {
 
                   <FormField
                     control={control}
-                    name={`education.${index}.graduationDate`}
+                    name={`education.${index}.end_date`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-zinc-700">Graduation Date</FormLabel>

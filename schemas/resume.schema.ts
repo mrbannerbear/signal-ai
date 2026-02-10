@@ -1,20 +1,20 @@
 import { z } from "zod";
 
 export const ResumeProfileSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  first_name: z.string(),
+  last_name: z.string(),
   headline: z.string(),
   bio: z.string(),
   location: z.string(),
-  portfolioUrl: z.string().optional(),
-  linkedinUrl: z.string().optional(),
+  portfolio_url: z.string().optional(),
+  linkedin_url: z.string().optional(),
   skills: z.array(z.string()),
   experience: z.array(
     z.object({
       company: z.string(),
       role: z.string(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
+      start_date: z.string().optional(),
+      end_date: z.string().optional(),
       bullets: z.array(z.string()),
     })
   ),
@@ -22,8 +22,8 @@ export const ResumeProfileSchema = z.object({
     z.object({
       institution: z.string(),
       degree: z.string().optional(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
+      start_date: z.string().optional(),
+      end_date: z.string().optional(),
     })
   ),
 });

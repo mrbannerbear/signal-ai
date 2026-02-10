@@ -8,9 +8,9 @@ interface Props {
 }
 
 const RISK_CONFIG = {
-  low: { color: "#22c55e", label: "Low" },
-  medium: { color: "#f59e0b", label: "Medium" },
-  high: { color: "#ef4444", label: "High" },
+  low: { color: "#059669", label: "Low" }, // Emerald-600
+  medium: { color: "#d97706", label: "Medium" }, // Amber-600
+  high: { color: "#dc2626", label: "High" }, // Red-600
 };
 
 export default function RiskLevelChart({ analyses }: Props) {
@@ -32,45 +32,53 @@ export default function RiskLevelChart({ analyses }: Props) {
   const total = analyses.length;
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-      <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-        <span className="w-8 h-1 rounded-full bg-amber-500" />
+    <div className="bg-card rounded-xl p-6 border border-border/40 shadow-sm h-full flex flex-col">
+      <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2 tracking-tight">
+        <span className="w-1 h-5 rounded-full bg-amber-500" />
         Risk Distribution
       </h3>
-      <div className="h-48 relative">
+      <div className="flex-1 w-full min-h-[200px] relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={50}
-              outerRadius={70}
-              paddingAngle={3}
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={4}
               dataKey="value"
+              stroke="none"
             >
               {data.map((entry, index) => (
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0" }}
-              formatter={(value: number) => [`${value} jobs`, ""]}
+              contentStyle={{
+                borderRadius: "8px",
+                border: "none",
+                backgroundColor: "#18181b",
+                color: "#fff",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+              }}
+              itemStyle={{ color: "#fff", fontSize: "12px", padding: 0 }}
+              formatter={(value: number) => [<span key="val" className="font-mono font-bold">{value} jobs</span>, ""]}
             />
           </PieChart>
         </ResponsiveContainer>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <div className="text-center">
-            <p className="text-2xl font-black text-slate-900">{total}</p>
-            <p className="text-xs text-slate-500">total</p>
+            <p className="text-3xl font-bold text-foreground tracking-tight font-mono">{total}</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">total</p>
           </div>
         </div>
       </div>
-      <div className="flex justify-center gap-4 mt-2">
+      <div className="flex justify-center gap-4 mt-6">
         {data.map((entry) => (
-          <div key={entry.name} className="flex items-center gap-1.5 text-sm">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-            <span className="text-slate-600">{entry.name}</span>
+          <div key={entry.name} className="flex items-center gap-2 text-sm">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="text-muted-foreground font-medium">{entry.name}</span>
           </div>
         ))}
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Profile } from "@/schemas/profiles.schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -197,8 +196,8 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                   </div>
                   <p className="text-sm text-zinc-400 font-mono shrink-0">
                     {edu.start_date && new Date(edu.start_date).getFullYear()} -{" "}
-                    {edu.graduation_date &&
-                      new Date(edu.graduation_date).getFullYear()}
+                    {edu.end_date &&
+                      new Date(edu.end_date).getFullYear()}
                   </p>
                 </div>
               </div>

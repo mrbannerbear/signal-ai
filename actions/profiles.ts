@@ -2,6 +2,7 @@
 
 import { createClient } from "@/app/lib/supabase/server";
 import { profileSchema } from "@/schemas/profiles.schema";
+import { parseProfileSkills } from "@/utils/parseProfileSkills";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -120,7 +121,8 @@ export async function getProfile() {
       .select("*, experience(*), education(*)")
       .eq("user_id", user.id)
       .single();
-
+    const parsedSkills = parseProfileSkills(profile.skills);
+    profile.skills = parsedSkills;
     return {
       user,
       profile: profile,

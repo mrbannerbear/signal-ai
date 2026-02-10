@@ -34,14 +34,14 @@ export function ProfileForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(profileSchema) as Resolver<Profile, any>,
     defaultValues: initialData || {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       headline: "",
       bio: "",
       skills: [],
       location: "",
-      portfolioUrl: "",
-      linkedinUrl: "",
+      portfolio_url: "",
+      linkedin_url: "",
       experience: [],
       education: [],
     },
@@ -63,13 +63,13 @@ export function ProfileForm({
       }
     };
 
-    updateIfEmpty("firstName", importedData.firstName);
-    updateIfEmpty("lastName", importedData.lastName);
+    updateIfEmpty("first_name", importedData.first_name);
+    updateIfEmpty("last_name", importedData.last_name);
     updateIfEmpty("headline", importedData.headline);
     updateIfEmpty("bio", importedData.bio);
     updateIfEmpty("location", importedData.location);
-    updateIfEmpty("portfolioUrl", importedData.portfolioUrl);
-    updateIfEmpty("linkedinUrl", importedData.linkedinUrl);
+    updateIfEmpty("portfolio_url", importedData.portfolio_url);
+    updateIfEmpty("linkedin_url", importedData.linkedin_url);
     
     // SKILLS
     if (importedData.skills && importedData.skills.length > 0) {
@@ -88,13 +88,11 @@ export function ProfileForm({
     if (importedData.experience && importedData.experience.length > 0) {
       // Map format
       const mappedExperience = importedData.experience.map(exp => ({
-         companyName: exp.company,
+         company_name: exp.company,
          role: exp.role,
-         startDate: exp.startDate ? new Date(exp.startDate) : new Date(), // Fallback to now if invalid? Zod will validate. 
-         // Actually, let's try to parse strings validly. parser gives "YYYY-MM" or "Present".
-         // We might need a helper to safely parse loose date strings. For now, simple Date constructor.
-         endDate: exp.endDate && exp.endDate.toLowerCase() !== "present" ? new Date(exp.endDate) : undefined,
-         isCurrent: !exp.endDate || exp.endDate.toLowerCase() === "present",
+         start_date: exp.start_date ? new Date(exp.start_date) : new Date(), // Fallback to now if invalid? Zod will validate. 
+         end_date: exp.end_date && exp.end_date.toLowerCase() !== "present" ? new Date(exp.end_date) : undefined,
+         is_current: !exp.end_date || exp.end_date.toLowerCase() === "present",
          description: exp.bullets ? exp.bullets.join("\n• ") : "", // Add bullet points
          location: "",
          position: 0
@@ -113,8 +111,8 @@ export function ProfileForm({
        const mappedEducation = importedData.education.map(edu => ({
          institution: edu.institution,
          degree: edu.degree || "",
-         startDate: edu.startDate ? new Date(edu.startDate) : undefined,
-         graduationDate: edu.endDate ? new Date(edu.endDate) : undefined,
+         start_date: edu.start_date ? new Date(edu.start_date) : undefined,
+         end_date: edu.end_date ? new Date(edu.end_date) : undefined,
          position: 0
        }));
 
@@ -155,10 +153,10 @@ export function ProfileForm({
         <div className="grid gap-6 p-6 md:p-8 border border-zinc-200 rounded-xl bg-card shadow-xs">
           <h2 className="text-xl font-semibold text-zinc-900">Identity & Persona</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="firstName" render={({ field }) => (
+            <FormField control={form.control} name="first_name" render={({ field }) => (
               <FormItem><FormLabel className="text-zinc-700">First Name</FormLabel><FormControl><Input placeholder="Jane" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl><FormMessage /></FormItem>
             )} />
-            <FormField control={form.control} name="lastName" render={({ field }) => (
+            <FormField control={form.control} name="last_name" render={({ field }) => (
               <FormItem><FormLabel className="text-zinc-700">Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl><FormMessage /></FormItem>
             )} />
           </div>
@@ -175,10 +173,10 @@ export function ProfileForm({
           <FormField control={form.control} name="location" render={({ field }) => (
             <FormItem><FormLabel className="flex gap-2 text-zinc-700"><MapPin className="w-4 h-4 text-emerald-500"/> Location</FormLabel><FormControl><Input placeholder="San Francisco, CA" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
-          <FormField control={form.control} name="portfolioUrl" render={({ field }) => (
+          <FormField control={form.control} name="portfolio_url" render={({ field }) => (
             <FormItem><FormLabel className="flex gap-2 text-zinc-700"><Globe className="w-4 h-4 text-emerald-500"/> Portfolio</FormLabel><FormControl><Input placeholder="https://portfolio.com" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
-          <FormField control={form.control} name="linkedinUrl" render={({ field }) => (
+          <FormField control={form.control} name="linkedin_url" render={({ field }) => (
             <FormItem><FormLabel className="text-zinc-700">LinkedIn</FormLabel><FormControl><Input placeholder="https://linkedin.com/in/jane" {...field} className="rounded-lg border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500" /></FormControl></FormItem>
           )} />
         </div>

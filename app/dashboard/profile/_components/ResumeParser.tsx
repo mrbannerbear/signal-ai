@@ -241,7 +241,7 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                           Candidate Profile
                         </p>
                         <h4 className="text-lg font-bold text-zinc-900 leading-tight">
-                          {parsedData?.firstName} {parsedData?.lastName}
+                          {parsedData?.first_name} {parsedData?.last_name}
                         </h4>
                         {parsedData?.headline && (
                           <p className="text-sm text-zinc-600 font-medium">
@@ -265,11 +265,11 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                     )}
 
                     {/* Links Section */}
-                    {(parsedData?.portfolioUrl || parsedData?.linkedinUrl) && (
+                    {(parsedData?.portfolio_url || parsedData?.linkedin_url) && (
                       <div className="flex gap-3 flex-wrap">
-                        {parsedData.portfolioUrl && (
+                        {parsedData.portfolio_url && (
                           <a
-                            href={parsedData.portfolioUrl}
+                            href={parsedData.portfolio_url}
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center gap-1.5 text-xs font-medium text-zinc-700 bg-zinc-100 px-3 py-1.5 rounded-full hover:bg-zinc-200 transition-colors"
@@ -278,9 +278,9 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                             Portfolio
                           </a>
                         )}
-                        {parsedData.linkedinUrl && (
+                        {parsedData.linkedin_url && (
                           <a
-                            href={parsedData.linkedinUrl}
+                            href={parsedData.linkedin_url}
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center gap-1.5 text-xs font-medium text-zinc-700 bg-zinc-100 px-3 py-1.5 rounded-full hover:bg-zinc-200 transition-colors"
@@ -330,10 +330,10 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                                   <h5 className="text-sm font-bold text-zinc-900">
                                     {exp.role}
                                   </h5>
-                                  {(exp.startDate || exp.endDate) && (
+                                  {(exp.start_date || exp.end_date) && (
                                     <span className="text-[10px] text-zinc-400 font-mono">
-                                      {exp.startDate} -{" "}
-                                      {exp.endDate || "Present"}
+                                      {exp.start_date} -{" "}
+                                      {exp.end_date || "Present"}
                                     </span>
                                   )}
                                 </div>
@@ -384,9 +384,9 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
                                       {edu.degree}
                                     </p>
                                   </div>
-                                  {(edu.startDate || edu.endDate) && (
+                                  {(edu.start_date || edu.end_date) && (
                                     <span className="text-[10px] text-zinc-500 font-mono bg-white px-2 py-0.5 rounded border border-zinc-200">
-                                      {edu.startDate} - {edu.endDate}
+                                      {edu.start_date} - {edu.end_date}
                                     </span>
                                   )}
                                 </div>
