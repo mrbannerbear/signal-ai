@@ -1,13 +1,10 @@
-export default function GlobalLoading() {
+export default function Loading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          <div className="w-12 h-12 border-4 border-indigo-100 rounded-full" />
-          <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin absolute inset-0" />
-        </div>
-        <p className="text-slate-500 font-medium animate-pulse">Loading...</p>
-      </div>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 space-y-4 animate-in fade-in duration-700">
+      <div className="size-10 rounded-full border-[3px] border-muted border-t-primary animate-spin" />
+      <p className="text-sm font-medium text-muted-foreground animate-pulse">
+        Loading...
+      </p>
     </div>
   );
 }

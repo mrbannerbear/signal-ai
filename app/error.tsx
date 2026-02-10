@@ -1,66 +1,44 @@
 "use client";
 
-import { useEffect } from "react";
+import { AlertCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function Error({
+export default function ErrorBoundary({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
-
   useEffect(() => {
-    console.error("Error:", error);
+    console.error(error);
   }, [error]);
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-100 shadow-sm max-w-md w-full text-center">
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-          <AlertTriangle className="w-8 h-8 text-red-500" />
-        </div>
-        
-        <h1 className="text-2xl font-bold text-slate-900 mb-3">
-          Oops! Something went wrong
-        </h1>
-        
-        <p className="text-slate-500 mb-6">
-          {"We encountered an unexpected error. Please try again."}
-        </p>
-        
+    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+      <div className="size-12 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center mb-6 ring-1 ring-amber-100 dark:ring-amber-900/30">
+        <AlertCircle className="size-6 text-amber-600 dark:text-amber-500" />
+      </div>
+      
+      <h2 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+        Something went wrong
+      </h2>
+      
+      <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
+        We couldn't load this section. This might be a temporary connection issue.
+      </p>
+
+      <div className="flex gap-4 items-center">
+        <Button onClick={() => reset()} variant="outline" className="min-w-[120px]">
+          <RotateCcw className="mr-2 size-4" />
+          Retry
+        </Button>
         {error.digest && (
-          <p className="text-xs text-slate-400 mb-6 font-mono">
-            Error ID: {error.digest}
-          </p>
+           <span className="text-xs font-mono text-muted-foreground px-2 py-1 rounded bg-muted">
+             ID: {error.digest.slice(0, 8)}
+           </span>
         )}
-        
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button
-            onClick={reset}
-            className="rounded-full font-semibold bg-indigo-600 hover:bg-indigo-700 gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Try Again
-          </Button>
-          <Button
-            onClick={() => router.back()}
-            variant="outline"
-            className="rounded-full font-semibold border-slate-200 hover:bg-slate-50 gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Go Back
-          </Button>
-        </div>
-        
-        <Link href="/dashboard" className="inline-block mt-4 text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-          Return to Dashboard →
-        </Link>
       </div>
     </div>
   );
