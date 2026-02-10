@@ -12,42 +12,61 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/actions/account";
 
 interface SidebarProps {
   isCollapsed: boolean;
+  isMobileOpen?: boolean;
   toggle: () => void;
+  closeMobile?: () => void;
 }
 
-export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
+export function Sidebar({ isCollapsed, isMobileOpen, toggle, closeMobile }: SidebarProps) {
   const pathname = usePathname();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
     { icon: UserCircle, label: "Profile", href: "/dashboard/profile" },
-    { icon: Briefcase, label: "Jobs", href: "/dashboard/jobs", badge: "New" },
+    { icon: Briefcase, label: "Jobs", href: "/dashboard/jobs" },
+    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   ];
 
   return (
     <aside
       className={cn(
-        "relative flex flex-col border-r border-slate-200/80 bg-white transition-all duration-300 ease-in-out z-40",
-        isCollapsed ? "w-20" : "w-72",
+        "fixed inset-y-0 left-0 z-40 bg-white border-r border-zinc-200 flex flex-col transition-all duration-300 ease-in-out md:relative",
+        // Mobile behavior
+        isMobileOpen ? "translate-x-0 shadow-xl" : "-translate-x-full md:translate-x-0 md:shadow-none",
+        // Width behavior (desktop only affects width, mobile is always fixed width)
+        isCollapsed ? "md:w-20" : "md:w-72",
+        "w-72" // Mobile width
       )}
     >
       {/* Signal Branding */}
-      <div className="h-16 flex items-center px-6 border-b border-slate-100 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex shrink-0 items-center justify-center">
-          <div className="w-1 h-4 bg-white/40 rounded-full mx-0.5 animate-pulse" />
-          <div className="w-1 h-2 bg-white rounded-full mx-0.5" />
-        </div>
-        {!isCollapsed && (
-          <span className="ml-3 font-bold tracking-tight text-slate-900 text-lg">
+      <div className="h-16 flex items-center justify-between px-6 border-b border-zinc-100 mb-4 bg-white/50 backdrop-blur-sm">
+        <div className="flex items-center">
+          <div className="w-8 h-8 rounded-lg bg-zinc-900 flex shrink-0 items-center justify-center">
+            <div className="w-1 h-4 bg-white/40 rounded-full mx-0.5 animate-pulse" />
+            <div className="w-1 h-2 bg-white rounded-full mx-0.5" />
+          </div>
+          <span className={cn(
+            "ml-3 font-semibold tracking-tight text-zinc-900 text-lg transition-opacity duration-300",
+            isCollapsed ? "md:opacity-0 md:w-0 md:overflow-hidden" : "opacity-100"
+          )}>
             Signal
           </span>
-        )}
+        </div>
+        
+        {/* Mobile Close Button */}
+        <button 
+          onClick={closeMobile}
+          className="md:hidden text-zinc-400 hover:text-zinc-900 transition-colors"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* The Analyze CTA */}
@@ -55,20 +74,27 @@ export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
         <Link href={"/dashboard/jobs?analysis=true"}>
           <Button
             className={cn(
-              "w-full bg-slate-900 text-white hover:bg-indigo-600 transition-all duration-300 shadow-sm",
-              isCollapsed ? "p-0 h-12 w-12 rounded-xl" : "h-11 rounded-xl px-4",
+              "w-full bg-zinc-900 text-white hover:bg-zinc-800 transition-all duration-300 shadow-sm",
+              isCollapsed && "md:p-0 md:h-10 md:w-10 md:rounded-lg md:justify-center",
+              !isCollapsed && "h-10 rounded-lg px-4 justify-start"
             )}
+            size={isCollapsed ? "icon" : "default"}
           >
-            <Sparkles className={cn("w-4 h-4", !isCollapsed && "mr-2")} />
-            {!isCollapsed && (
-              <span className="font-semibold text-sm">Analyze</span>
+            <Sparkles
+              className={cn("w-4 h-4 text-emerald-400", (!isCollapsed || isMobileOpen) && "mr-2")}
+            />
+            {(!isCollapsed || isMobileOpen) && (
+              <span className={cn(
+                "font-medium text-sm transition-opacity duration-200",
+                isCollapsed && "md:hidden" 
+              )}>Analyze Job</span>
             )}
           </Button>
         </Link>
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 px-3 space-y-1">
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-100">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -76,29 +102,33 @@ export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center rounded-xl transition-colors",
-                isCollapsed ? "justify-center h-12 w-12 mx-auto" : "px-4 h-11",
+                "group flex items-center rounded-lg transition-colors relative",
+                isCollapsed ? "md:justify-center md:h-10 md:w-10 md:mx-auto" : "px-4 h-10",
+                "px-4 h-10", // Mobile style
                 isActive
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50",
+                  ? "bg-zinc-100 text-zinc-900"
+                  : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50",
               )}
             >
               <item.icon
-                size={20}
+                size={18}
                 className={cn(
                   isActive
-                    ? "text-indigo-600"
-                    : "text-slate-400 group-hover:text-slate-600",
+                    ? "text-emerald-600"
+                    : "text-zinc-400 group-hover:text-zinc-600",
                 )}
               />
-              {!isCollapsed && (
-                <div className="ml-3 flex-1 flex items-center justify-between">
-                  <span className="font-medium text-sm">{item.label}</span>
-                  {item.badge && (
-                    <span className="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-100">
-                      {item.badge}
-                    </span>
-                  )}
+              <div className={cn(
+                "ml-3 flex-1 flex items-center justify-between whitespace-nowrap overflow-hidden transition-all duration-300",
+                isCollapsed ? "md:w-0 md:opacity-0" : "w-auto opacity-100"
+              )}>
+                <span className="font-medium text-sm">{item.label}</span>
+              </div>
+              
+              {/* Tooltip for collapsed mode (Desktop only) */}
+              {isCollapsed && (
+                <div className="hidden md:group-hover:block absolute left-full ml-2 px-2 py-1 bg-zinc-900 text-white text-xs rounded-md whitespace-nowrap z-50 animate-in fade-in slide-in-from-left-1">
+                  {item.label}
                 </div>
               )}
             </Link>
@@ -107,42 +137,31 @@ export function Sidebar({ isCollapsed, toggle }: SidebarProps) {
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4 border-t border-slate-100">
-        <Link
-          href="/dashboard/settings"
-          className={cn(
-            "flex items-center text-slate-500 hover:text-slate-900 rounded-xl transition-all",
-            isCollapsed ? "justify-center h-12" : "px-4 h-11 hover:bg-slate-50",
-          )}
-        >
-          <Settings size={20} />
-          {!isCollapsed && (
-            <span className="ml-3 font-medium text-sm">Settings</span>
-          )}
-        </Link>
-
+      <div className="p-4 border-t border-zinc-100 mt-auto">
         <Button
           onClick={async () => {
             await signOut();
           }}
+          variant="ghost"
           className={cn(
-            "flex items-center justify-start text-slate-500 hover:text-slate-900 rounded-xl transition-all mt-2 bg-transparent w-full cursor-pointer hover:bg-slate-50",
-            isCollapsed ? "justify-center h-12" : "px-4 h-11 hover:bg-slate-50",
+            "flex items-center justify-start text-zinc-500 hover:text-zinc-900 rounded-xl transition-all bg-transparent w-full cursor-pointer hover:bg-zinc-50",
+            isCollapsed ? "md:justify-center md:h-10 md:px-0" : "px-4 h-10",
           )}
         >
-          <LogOut />
-          {!isCollapsed && (
-            <span className="ml-3 font-medium text-sm">Log Out</span>
-          )}
+          <LogOut size={18} />
+          <span className={cn(
+            "ml-3 font-medium text-sm transition-all duration-300",
+             isCollapsed ? "md:hidden" : "block"
+          )}>Log Out</span>
         </Button>
       </div>
 
-      {/* Toggle Button */}
+      {/* Toggle Button (Desktop Only) */}
       <button
         onClick={toggle}
-        className="absolute -right-3 top-20 bg-white text-slate-400 rounded-full p-1.5 border border-slate-200 shadow-sm hover:text-slate-900 transition-colors hidden md:block"
+        className="absolute -right-3 top-14 bg-white text-zinc-400 rounded-full p-1 border border-zinc-200 shadow-sm hover:text-zinc-900 transition-colors hidden md:flex items-center justify-center h-6 w-6 z-50"
       >
-        {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+        {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
     </aside>
   );

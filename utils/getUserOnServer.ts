@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { createClient } from "@/app/lib/supabase/server";
 
 export default async function getUserOnServer() {

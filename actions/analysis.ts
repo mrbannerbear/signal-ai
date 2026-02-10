@@ -5,6 +5,8 @@ import { GoogleGenAI } from "@google/genai";
 import { jobAnalysisOutputSchema, type JobAnalysisOutput } from "@/schemas/job-analysis.schema";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
+import { getGeminiApiKey } from "@/utils/getEnv";
+import { toast } from "sonner";
 
 const ANALYSIS_MODEL = "gemini-2.5-flash";
 const MAX_RETRIES = 3;
@@ -27,8 +29,8 @@ async function withRetry<T>(
 ): Promise<T> {
   try {
     return await fn();
-  } catch (error) {
-    if (retries === 0) throw error;
+  } catch {
+    if (retries === 0) toast.error("Failed to analyze job after multiple attempts.");
     await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS * (MAX_RETRIES - retries + 1)));
     return withRetry(fn, retries - 1);
   }
@@ -100,13 +102,7 @@ export async function analyzeJob(
   const job = jobResult.data;
   const profile = profileResult.data;
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new AnalysisError(
-      "GEMINI_API_KEY not configured",
-      "CONFIG_ERROR"
-    );
-  }
+  const apiKey = getGeminiApiKey();
 
   const ai = new GoogleGenAI({ apiKey });
 
@@ -167,6 +163,10 @@ export async function analyzeJob(
 
   if (upsertError) {
     console.error("Failed to save analysis:", upsertError);
+  } else {
+    // Revalidate dashboard to update insights
+    const { revalidatePath } = await import("next/cache");
+    revalidatePath("/dashboard");
   }
 
   return content;
@@ -218,7 +218,7 @@ ${sanitizeInput(job.responsibilities)}
 ${
   profile
     ? `# Candidate Profile
-Name: ${sanitizeInput(profile.firstName)} ${sanitizeInput(profile.lastName)}
+Name: ${sanitizeInput(profile.first_name)} ${sanitizeInput(profile.last_name)}
 Current Title: ${sanitizeInput(profile.headline)}
 Location: ${sanitizeInput(profile.location)}
 Skills: ${skillsList}
@@ -235,28 +235,28 @@ IMPORTANT: Return ONLY a valid JSON object matching this exact structure (no mar
 {
   "analysisSummary": "string - 2-3 sentence executive summary",
   "summary": {
-    "overview": "string",
-    "keyPoints": ["string array"]
+    "overview": "string - detailed overview of the job and fit",
+    "keyPoints": ["string array - 1 to 7 key points"]
   },
   "skills": {
-    "required": ["string array"],
-    "preferred": ["string array"], 
-    "matchingSkills": ["string array"]
+    "required": ["string array - skills required by the job"],
+    "preferred": ["string array - nice-to-have skills"],
+    "matchingSkills": ["string array - candidate's matching skills"]
   },
   "gaps": {
-    "missingSkills": ["string array"],
-    "riskLevel": "medium",  // MUST be exactly one of: "low", "medium", or "high"
+    "missingSkills": ["string array - skills the candidate lacks"],
+    "riskLevel": "medium",
     "recommendations": [{"skill": "string", "action": "string", "timeEstimate": "string"}]
   },
   "seniority": {
-    "level": "senior",  // MUST be exactly one of: "junior", "mid", "senior", "lead", or "executive"
+    "level": "senior",
     "yearsExpected": "string - e.g. 3-5 years",
     "candidateFit": "string - honest assessment"
   },
   "location": {
-    "type": "remote",  // MUST be exactly one of: "remote", "hybrid", or "onsite"
+    "type": "remote",
     "location": "string - city/country or Remote",
-    "relocationRequired": false,  // boolean: true or false
+    "relocationRequired": false,
     "candidateMatch": "string - how location affects candidacy"
   },
   "suggestions": {
@@ -270,29 +270,31 @@ IMPORTANT: Return ONLY a valid JSON object matching this exact structure (no mar
     "interviewAngles": [{"topic": "string", "whyTheyCare": "string", "howToAnswer": "string"}],
     "redFlags": [{"risk": "string", "mitigation": "string"}]
   },
-  
+  "overallFitScore": {
+    "score": 75,
+    "explanation": "string - why this score",
+    "biggestStrengths": ["array of 3-5 specific strengths"],
+    "improvementAreas": ["array of 0-5 specific areas to improve"],
+    "label": "Good Fit",
+    "confidence": 85,
+    "dimensionScores": {
+      "skillsFit": 80,
+      "experienceFit": 70,
+      "seniorityFit": 75,
+      "locationFit": 90
+    }
+  }
+}
+
 CRITICAL VALIDATION RULES:
-- targetSection: Use ONLY these exact values: "Experience", "Skills", or "Summary"
-- Do NOT use: "Bio", "Bio/Experience", "Project", or any other variation
 - riskLevel: Use ONLY: "low", "medium", or "high"
 - seniority.level: Use ONLY: "junior", "mid", "senior", "lead", or "executive"
 - location.type: Use ONLY: "remote", "hybrid", or "onsite"
 - overallFitScore.label: Use ONLY: "Strong Match", "Good Fit", "Moderate Fit", "Weak Match", or "Poor Fit"
-  "overallFitScore": {
-    "score": number (0-100),
-    "explanation": "string",
-    "biggestStrengths": ["array of 3-5 specific strengths"],
-    "improvementAreas": ["array of 3-5 specific areas to improve"],
-    "label": "Good Fit",  // MUST be exactly one of: "Strong Match", "Good Fit", "Moderate Fit", "Weak Match", or "Poor Fit"
-    "confidence": 85,  // number from 0 to 100
-    "dimensionScores": {
-      "skillsFit": number (0-100),
-      "experienceFit": number (0-100),
-      "seniorityFit": number (0-100),
-      "locationFit": number (0-100)
-    }
-  }
-}`;
+- targetSection: Use ONLY: "Experience", "Skills", or "Summary"
+- All scores are numbers 0-100
+- keyPoints must have at least 1 item and at most 7 items
+- biggestStrengths must have at least 1 item`;
 
   return { systemPrompt, userPrompt };
 }

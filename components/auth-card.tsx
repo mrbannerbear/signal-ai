@@ -38,12 +38,14 @@ interface AuthCardProps {
     values: SignupInput,
   ) => Promise<{ error?: string; success?: boolean }>;
   onGoogleSignIn: () => Promise<{ error?: string; url?: string }>;
+  onDemoSignIn: () => Promise<{ error?: string; success?: boolean }>;
 }
 
 export default function AuthCard({
   onSignIn,
   onSignUp,
   onGoogleSignIn,
+  onDemoSignIn,
 }: AuthCardProps) {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isPending, startTransition] = useTransition();
@@ -54,9 +56,8 @@ export default function AuthCard({
   } | null>(null);
   const router = useRouter();
 
-  const form = useForm<SignupInput>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(mode === "login" ? loginSchema : signupSchema) as any,
+  const form = useForm<LoginInput | SignupInput>({
+    resolver: zodResolver(mode === "login" ? loginSchema : signupSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -64,14 +65,14 @@ export default function AuthCard({
     },
   });
 
-  const onSubmit = async (values: SignupInput) => {
+  const onSubmit = async (values: LoginInput | SignupInput) => {
     setStatus(null);
     startTransition(async () => {
       // Logic split based on mode
       const result =
         mode === "login"
-          ? await onSignIn({ email: values.email, password: values.password })
-          : await onSignUp(values);
+          ? await onSignIn(values as LoginInput)
+          : await onSignUp(values as SignupInput);
 
       if (result?.error) {
         setStatus({ type: "error", message: result.error });
@@ -96,24 +97,24 @@ export default function AuthCard({
 
   return (
     <motion.div layout className="w-full max-w-md">
-      <Card className="border-border/50 bg-background/60 backdrop-blur-xl shadow-2xl overflow-hidden">
-        <CardHeader>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Sparkles className="w-5 h-5 text-primary" />
+      <Card className="border-white/50 bg-white/50 backdrop-blur-xl shadow-xl overflow-hidden ring-1 ring-zinc-900/5">
+        <CardHeader className="space-y-1 pb-8 pt-10 px-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="size-8 rounded-lg bg-zinc-900 flex items-center justify-center">
+              <Sparkles className="size-4 text-white" />
             </div>
-            <span className="font-bold text-xl uppercase tracking-wider">
+            <span className="font-semibold text-lg tracking-tight text-zinc-900">
               Signal AI
             </span>
           </div>
-          <CardTitle className="text-2xl">
+          <CardTitle className="text-2xl font-semibold tracking-tight text-zinc-900">
             {isSuccess
               ? "Verify Email"
               : mode === "login"
                 ? "Welcome back"
                 : "Create Account"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-zinc-500 text-base">
             {isSuccess
               ? `Verification link sent to ${form.getValues("email")}`
               : mode === "login"
@@ -122,7 +123,7 @@ export default function AuthCard({
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="px-8 pb-10">
           <AnimatePresence mode="wait">
             {isSuccess ? (
               <motion.div
@@ -239,6 +240,34 @@ export default function AuthCard({
                       {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>
+
+                  {/* demo sign in button */}
+                  {mode === "login" && (
+                    <Button
+                      variant={"secondary"}
+                      type="button"
+                      className="flex w-3/4 relative mt-4 mx-auto"
+                      disabled={isPending}
+                      onClick={async () => {
+                        startTransition(async () => {
+                          const result = await onDemoSignIn();
+                          if (result?.error) {
+                            setStatus({ type: "error", message: result.error });
+                          } else if (result?.success) {
+                            router.push("/");
+                          }
+                        });
+                      }}
+                    >
+                      {isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        "Demo Sign In"
+                      )}
+                      {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </Button>
+                  )}
+
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-border" />

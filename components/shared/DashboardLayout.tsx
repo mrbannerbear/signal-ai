@@ -22,16 +22,25 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] text-slate-900 overflow-hidden selection:bg-indigo-100 selection:text-indigo-700">
+    <div className="flex h-screen bg-[#fafaf9] text-zinc-900 overflow-hidden selection:bg-emerald-100 selection:text-emerald-900">
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden animate-in fade-in duration-200"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
       <Sidebar
         isCollapsed={isCollapsed}
+        isMobileOpen={isMobileOpen}
         toggle={() => setIsCollapsed(!isCollapsed)}
+        closeMobile={() => setIsMobileOpen(false)}
       />
 
       <div className="flex-1 flex flex-col relative min-w-0">
-        <Header onMenuClick={() => setIsMobileOpen(!isMobileOpen)} />
-
-        <main className="flex-1 overflow-y-auto p-6 px-2 md:p-8 custom-scrollbar">
+        <Header onMenuClick={() => setIsMobileOpen(true)} />
+        <main className="flex-1 overflow-y-auto p-6 px-4 md:p-8 scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
           <div className="max-w-6xl mx-auto flex flex-col min-h-full">
             <div className="flex-1">{children}</div>
             <Footer />

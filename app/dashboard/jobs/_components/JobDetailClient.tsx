@@ -6,6 +6,7 @@ import { analyzeJob } from "@/actions/analysis";
 import { updateJob, deleteJob } from "@/actions/jobs";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
+import { JobAnalysisOutput } from "@/schemas/job-analysis.schema";
 import JobHeader from "./JobHeader";
 import JobDetails from "./JobDetails";
 import AnalysisResults from "./AnalysisResults";
@@ -14,8 +15,7 @@ import AnalysisSkeleton from "./AnalysisSkeleton";
 interface JobDetailClientProps {
   job: Job;
   profile: Profile | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  existingAnalysis?: any;
+  existingAnalysis?: JobAnalysisOutput;
 }
 
 export default function JobDetailClient({
@@ -25,9 +25,10 @@ export default function JobDetailClient({
 }: JobDetailClientProps) {
   const router = useRouter();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [analysis, setAnalysis] = useState<any>(existingAnalysis || null);
-  console.log("Existing Analysis:", existingAnalysis);
+  const [analysis, setAnalysis] = useState<JobAnalysisOutput | null>(
+    existingAnalysis || null
+  );
+
   const [error, setError] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
   

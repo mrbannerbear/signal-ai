@@ -1,8 +1,9 @@
 "use client";
 
+import { JobAnalysisOutput } from "@/schemas/job-analysis.schema";
+
 interface AnalysisResultsProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  analysis: any;
+  analysis: JobAnalysisOutput;
 }
 
 export default function AnalysisResults({ analysis }: AnalysisResultsProps) {
