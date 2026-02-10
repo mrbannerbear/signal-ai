@@ -31,7 +31,7 @@ export default function Error({
         </h1>
         
         <p className="text-slate-500 mb-6">
-          {error.message || "We encountered an unexpected error. Please try again."}
+          {"We encountered an unexpected error. Please try again."}
         </p>
         
         {error.digest && (

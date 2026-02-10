@@ -41,7 +41,7 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
 
         <div className="relative z-10 pt-8 md:pt-0">
           <h1 className="text-3xl md:text-4xl font-semibold text-zinc-900 mb-2 tracking-tight pr-20 md:pr-0 leading-tight">
-            {profile.firstName} {profile.lastName}
+            {profile.first_name} {profile.last_name}
           </h1>
           {profile.headline && (
             <p className="text-lg md:text-xl text-zinc-600 font-medium mb-6 max-w-2xl leading-relaxed">
@@ -62,9 +62,9 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                 {email}
               </div>
             )}
-            {profile.portfolioUrl && (
+            {profile.portfolio_url && (
               <a
-                href={profile.portfolioUrl}
+                href={profile.portfolio_url}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 text-zinc-900 rounded-md border border-zinc-200 hover:bg-zinc-200 transition-colors"
@@ -73,9 +73,9 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                 Portfolio
               </a>
             )}
-            {profile.linkedinUrl && (
+            {profile.linkedin_url && (
               <a
-                href={profile.linkedinUrl}
+                href={profile.linkedin_url}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 text-sky-700 rounded-md border border-sky-100 hover:bg-sky-100 transition-colors"
@@ -126,18 +126,18 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                       {exp.role}
                     </h4>
                     <span className="text-xs md:text-sm font-mono text-zinc-500 bg-zinc-50 px-2 py-1 md:px-3 md:py-1 rounded-md border border-zinc-200 w-fit">
-                      {new Date(exp.startDate).toLocaleDateString(undefined, {
+                      {new Date(exp.start_date).toLocaleDateString(undefined, {
                         month: "short",
                         year: "numeric",
                       })}{" "}
                       -
-                      {exp.isCurrent
+                      {exp.is_current
                         ? " Present"
-                        : ` ${new Date(exp.endDate!).toLocaleDateString(undefined, { month: "short", year: "numeric" })}`}
+                        : ` ${new Date(exp.end_date!).toLocaleDateString(undefined, { month: "short", year: "numeric" })}`}
                     </span>
                   </div>
                   <p className="text-emerald-600 font-medium text-base md:text-lg mb-3 md:mb-4">
-                    {exp.companyName}
+                    {exp.company_name}
                   </p>
                   {exp.description && (
                     <p className="text-zinc-600 leading-relaxed whitespace-pre-line text-sm md:text-base">
@@ -196,9 +196,9 @@ export const ProfileReadView = ({ profile, email }: ProfileReadViewProps) => {
                     <p className="text-zinc-600 font-medium">{edu.degree}</p>
                   </div>
                   <p className="text-sm text-zinc-400 font-mono shrink-0">
-                    {edu.startDate && new Date(edu.startDate).getFullYear()} -{" "}
-                    {edu.graduationDate &&
-                      new Date(edu.graduationDate).getFullYear()}
+                    {edu.start_date && new Date(edu.start_date).getFullYear()} -{" "}
+                    {edu.graduation_date &&
+                      new Date(edu.graduation_date).getFullYear()}
                   </p>
                 </div>
               </div>

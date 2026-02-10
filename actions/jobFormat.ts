@@ -1,11 +1,12 @@
 "use server";
 import { GoogleGenAI } from "@google/genai";
 import { Job, jobSchema } from "@/schemas/jobs.schema";
+import { getGeminiApiKey } from "@/utils/getEnv";
 
 export const formatJobData = async (unstructredText: string): Promise<Job> => {
-  const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY || "",
-  });
+  const apiKey = getGeminiApiKey();
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const safeInput = unstructredText.slice(0, 20000);
   // date in mm/dd/yyyy format

@@ -5,6 +5,8 @@ import { GoogleGenAI } from "@google/genai";
 import { jobAnalysisOutputSchema, type JobAnalysisOutput } from "@/schemas/job-analysis.schema";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
+import { getGeminiApiKey } from "@/utils/getEnv";
+import { toast } from "sonner";
 
 const ANALYSIS_MODEL = "gemini-2.5-flash";
 const MAX_RETRIES = 3;
@@ -27,8 +29,8 @@ async function withRetry<T>(
 ): Promise<T> {
   try {
     return await fn();
-  } catch (error) {
-    if (retries === 0) throw error;
+  } catch {
+    if (retries === 0) toast.error("Failed to analyze job after multiple attempts.");
     await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS * (MAX_RETRIES - retries + 1)));
     return withRetry(fn, retries - 1);
   }
@@ -100,13 +102,7 @@ export async function analyzeJob(
   const job = jobResult.data;
   const profile = profileResult.data;
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new AnalysisError(
-      "GEMINI_API_KEY not configured",
-      "CONFIG_ERROR"
-    );
-  }
+  const apiKey = getGeminiApiKey();
 
   const ai = new GoogleGenAI({ apiKey });
 
@@ -222,7 +218,7 @@ ${sanitizeInput(job.responsibilities)}
 ${
   profile
     ? `# Candidate Profile
-Name: ${sanitizeInput(profile.firstName)} ${sanitizeInput(profile.lastName)}
+Name: ${sanitizeInput(profile.first_name)} ${sanitizeInput(profile.last_name)}
 Current Title: ${sanitizeInput(profile.headline)}
 Location: ${sanitizeInput(profile.location)}
 Skills: ${skillsList}

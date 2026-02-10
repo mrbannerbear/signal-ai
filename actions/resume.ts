@@ -1,16 +1,19 @@
-"use server"
+"use server";
 
 import { ResumeProfile, ResumeProfileSchema } from "@/schemas/resume.schema";
 import { GoogleGenAI } from "@google/genai";
 
 import { createClient } from "@/app/lib/supabase/server";
+import { getGeminiApiKey } from "@/utils/getEnv";
 
 export const formatResumeData = async (
   optimizedResumeText: string,
-  fileMeta?: { fileName: string; fileHash: string }
+  fileMeta?: { fileName: string; fileHash: string },
 ): Promise<ResumeProfile> => {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     throw new Error("Unauthorized");
@@ -41,14 +44,16 @@ export const formatResumeData = async (
     if (error) {
       console.error("Rate limit check failed", error);
     } else if (count !== null && count >= 5) {
-      throw new Error("Rate limit exceeded: You can only parse 5 resumes per hour.");
+      throw new Error(
+        "Rate limit exceeded: You can only parse 5 resumes per hour.",
+      );
     }
   }
 
   // 2. AI PROCESSING
-  const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY || "",
-  });
+  const apiKey = getGeminiApiKey();
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const safeInput = optimizedResumeText.slice(0, 15_000);
 
@@ -94,7 +99,7 @@ ${safeInput}
 
   // 3. STORAGE
   if (fileMeta) {
-    // Upsert to handle race conditions where the file might have been uploaded 
+    // Upsert to handle race conditions where the file might have been uploaded
     // by the same user in another tab concurrently.
     await supabase.from("resumes").upsert(
       {
@@ -106,7 +111,7 @@ ${safeInput}
       {
         onConflict: "user_id, file_hash",
         ignoreDuplicates: true, // If it exists, we don't need to overwrite, just ignore
-      }
+      },
     );
   }
 

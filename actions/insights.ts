@@ -13,6 +13,7 @@ import {
   safeAverage,
   buildInsightsSummaryPrompt,
 } from "./insights/utils";
+import { getGeminiApiKey } from "@/utils/getEnv";
 
 export async function getAllUserAnalyses(): Promise<{
   analyses: AnalysisSummaryData[];
@@ -34,7 +35,8 @@ export async function getAllUserAnalyses(): Promise<{
 
     const { data: analyses, error } = await supabase
       .from("analysis")
-      .select(`
+      .select(
+        `
         job_id,
         analysis_summary,
         overall_fit_score,
@@ -43,7 +45,8 @@ export async function getAllUserAnalyses(): Promise<{
         top_strengths,
         top_weaknesses,
         jobs!inner(title, company)
-      `)
+      `,
+      )
       .eq("profile_id", profile.id);
 
     if (error) {
@@ -52,7 +55,7 @@ export async function getAllUserAnalyses(): Promise<{
     }
 
     const mapped = (analyses || []).map((a) =>
-      mapToAnalysisSummary(a as unknown as Record<string, unknown>)
+      mapToAnalysisSummary(a as unknown as Record<string, unknown>),
     );
 
     return { analyses: mapped, error: null };
@@ -141,7 +144,8 @@ export async function regenerateInsights(force = false): Promise<{
     try {
       const prompt = buildInsightsSummaryPrompt(analyses);
       if (prompt) {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+        const apiKey = getGeminiApiKey();
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
           model: "gemini-2.5-flash",
           contents: prompt,
@@ -181,7 +185,11 @@ export async function regenerateInsights(force = false): Promise<{
     return { insights: upserted, regenerated: true, error: null };
   } catch (err) {
     console.error("regenerateInsights error:", err);
-    return { insights: null, regenerated: false, error: "Failed to regenerate insights" };
+    return {
+      insights: null,
+      regenerated: false,
+      error: "Failed to regenerate insights",
+    };
   }
 }
 

@@ -67,7 +67,7 @@ const ResumeParser = ({ onApply, compact = false, layout = "column" }: ResumePar
 
       const extracted = await extractPdfText(file);
       if (!checkIfResume(extracted)) {
-        alert("This does not appear to be a resume.");
+        toast.error("This does not appear to be a resume.");
         setStatus("idle");
         return;
       }
