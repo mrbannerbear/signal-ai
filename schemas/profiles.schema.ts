@@ -24,7 +24,7 @@ export const educationSchema = z.object({
 });
 
 export const profileSchema = z.object({
-  id: z.uuid().optional(),
+  id: z.uuid().optional().or(z.literal("")),
   first_name: z.string().min(2, "First name is required"),
   last_name: z.string().min(2, "Last name is required"),
   headline: z

@@ -93,3 +93,23 @@ export const googleAuth = async () => {
 
   return { error: "Failed to get authentication URL" };
 };
+
+export const demoSignIn = async () => {
+  const email = process.env.DEMO_EMAIL;
+  const password = process.env.DEMO_PASSWORD;
+
+  if (!email || !password) {
+    return { error: "Demo credentials are not configured on the server." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  
+  if (error) {
+    console.error("Demo sign in failed:", error.message);
+    return { error: "Failed to sign in with demo credentials." };
+  }
+  
+  revalidatePath("/");
+  return { success: true };
+};

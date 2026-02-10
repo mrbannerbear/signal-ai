@@ -50,7 +50,6 @@ export const ProfilePageContent = ({
   // Edit Mode View
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      
       {/* Edit Mode Header */}
       <div className="flex flex-row md:items-center justify-between gap-4">
         <div>

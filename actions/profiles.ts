@@ -29,7 +29,9 @@ export async function updateProfileAction(
   if (!validated.success)
     return { success: false, errors: validated.error.flatten().fieldErrors };
 
-  const profileData = validated.data;
+  // Separate main profile data from relations
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { experience, education, id, ...profileData } = validated.data;
 
   try {
     const { error: pError } = await supabase
@@ -44,16 +46,16 @@ export async function updateProfileAction(
       supabase.from("education").delete().eq("profile_id", profileId),
     ]);
 
-    if (profileData.experience?.length) {
+    if (experience?.length) {
       const { error: expError } = await supabase
         .from("experience")
-        .insert(profileData.experience);
+        .insert(experience.map((e) => ({ ...e, profile_id: profileId })));
       if (expError) throw expError;
     }
-    if (profileData.education?.length) {
+    if (education?.length) {
       const { error: eduError } = await supabase
         .from("education")
-        .insert(profileData.education);
+        .insert(education.map((e) => ({ ...e, profile_id: profileId })));
       if (eduError) throw eduError;
     }
 
@@ -76,25 +78,33 @@ export async function createProfileAction(formData: unknown) {
   const validated = profileSchema.safeParse(formData);
   if (!validated.success)
     return { success: false, errors: validated.error.flatten().fieldErrors };
+  
+  // Separate main profile data from relations
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { experience, education, id, ...profileData } = validated.data;
 
   try {
-    const { error: pError } = await supabase
+    // Insert profile first (without relations or ID if empty)
+    const { data: profile, error: pError } = await supabase
       .from("profiles")
-      .insert({ ...validated.data, user_id: user.id })
+      .insert({ ...profileData, user_id: user.id })
       .select("id")
       .single();
 
     if (pError) throw pError;
-    if (validated.data.experience?.length) {
+
+    const profileId = profile.id;
+
+    if (experience?.length) {
       const { error: expError } = await supabase
         .from("experience")
-        .insert(validated.data.experience);
+        .insert(experience.map((e) => ({ ...e, profile_id: profileId })));
       if (expError) throw expError;
     }
-    if (validated.data.education?.length) {
+    if (education?.length) {
       const { error: eduError } = await supabase
         .from("education")
-        .insert(validated.data.education);
+        .insert(education.map((e) => ({ ...e, profile_id: profileId })));
       if (eduError) throw eduError;
     }
 

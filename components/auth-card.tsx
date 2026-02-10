@@ -38,12 +38,14 @@ interface AuthCardProps {
     values: SignupInput,
   ) => Promise<{ error?: string; success?: boolean }>;
   onGoogleSignIn: () => Promise<{ error?: string; url?: string }>;
+  onDemoSignIn: () => Promise<{ error?: string; success?: boolean }>;
 }
 
 export default function AuthCard({
   onSignIn,
   onSignUp,
   onGoogleSignIn,
+  onDemoSignIn,
 }: AuthCardProps) {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [isPending, startTransition] = useTransition();
@@ -54,9 +56,8 @@ export default function AuthCard({
   } | null>(null);
   const router = useRouter();
 
-  const form = useForm<SignupInput>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(mode === "login" ? loginSchema : signupSchema) as any,
+  const form = useForm<LoginInput | SignupInput>({
+    resolver: zodResolver(mode === "login" ? loginSchema : signupSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -64,14 +65,14 @@ export default function AuthCard({
     },
   });
 
-  const onSubmit = async (values: SignupInput) => {
+  const onSubmit = async (values: LoginInput | SignupInput) => {
     setStatus(null);
     startTransition(async () => {
       // Logic split based on mode
       const result =
         mode === "login"
-          ? await onSignIn({ email: values.email, password: values.password })
-          : await onSignUp(values);
+          ? await onSignIn(values as LoginInput)
+          : await onSignUp(values as SignupInput);
 
       if (result?.error) {
         setStatus({ type: "error", message: result.error });
@@ -239,6 +240,34 @@ export default function AuthCard({
                       {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>
+
+                  {/* demo sign in button */}
+                  {mode === "login" && (
+                    <Button
+                      variant={"secondary"}
+                      type="button"
+                      className="flex w-3/4 relative mt-4 mx-auto"
+                      disabled={isPending}
+                      onClick={async () => {
+                        startTransition(async () => {
+                          const result = await onDemoSignIn();
+                          if (result?.error) {
+                            setStatus({ type: "error", message: result.error });
+                          } else if (result?.success) {
+                            router.push("/");
+                          }
+                        });
+                      }}
+                    >
+                      {isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        "Demo Sign In"
+                      )}
+                      {!isPending && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </Button>
+                  )}
+
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-border" />
