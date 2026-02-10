@@ -17,46 +17,55 @@ export default async function JobsPage({
 
   return (
     <div className="space-y-8 p-6 max-w-6xl mx-auto animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-3xl md:text-3xl font-black tracking-tight text-slate-900">
-            {isAnalysis ? "Analysis" : "Saved Jobs"}
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+            {isAnalysis ? "Analysis Mode" : "Saved Jobs"}
           </h1>
-          <p className="text-slate-500 text-sm font-medium mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             {isAnalysis
-              ? "Click to Compare Profile"
+              ? "Select a job to compare against your profile"
               : `Managing ${totalCount} saved opportunities`}
           </p>
         </div>
-        <div className="flex gap-2">
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+           {/* Segmented Control */}
+           <div className="flex bg-muted p-1 rounded-lg border border-border/40 shadow-sm w-full sm:w-auto">
+             <Link
+                href="/dashboard/jobs"
+                className={cn(
+                  "px-4 py-1.5 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none text-center",
+                  !isAnalysis
+                    ? "bg-background text-foreground shadow-sm ring-1 ring-black/5"
+                    : "text-muted-foreground hover:text-foreground/80"
+                )}
+             >
+               Saved Jobs
+             </Link>
+             <Link
+                href="/dashboard/jobs?analysis=true"
+                className={cn(
+                  "px-4 py-1.5 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none text-center",
+                  isAnalysis
+                    ? "bg-background text-foreground shadow-sm ring-1 ring-black/5"
+                    : "text-muted-foreground hover:text-foreground/80"
+                )}
+              >
+                Analysis
+              </Link>
+           </div>
+
           {!isAnalysis && (
             <Button
               asChild
-              className="rounded-full font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700"
+              className="rounded-xl font-bold shadow-sm bg-zinc-900 hover:bg-zinc-800 text-white w-full sm:w-auto"
             >
               <Link href="/dashboard/jobs/new">
                 <Plus className="w-4 h-4 mr-2" /> New Job
               </Link>
             </Button>
           )}
-          <Button
-            asChild
-            variant="outline"
-            className={cn(
-              "rounded-full font-bold border-slate-200",
-              isAnalysis
-                ? "bg-indigo-50 text-indigo-700 border-indigo-100"
-                : "text-slate-600",
-            )}
-          >
-            <Link
-              href={
-                isAnalysis ? "/dashboard/jobs" : "/dashboard/jobs?analysis=true"
-              }
-            >
-              {isAnalysis ? "View All Jobs" : "Analysis Mode"}
-            </Link>
-          </Button>
         </div>
       </div>
 

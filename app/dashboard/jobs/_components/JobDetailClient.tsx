@@ -28,7 +28,7 @@ export default function JobDetailClient({
   const [analysis, setAnalysis] = useState<JobAnalysisOutput | null>(
     existingAnalysis || null
   );
-  console.log("Existing Analysis:", existingAnalysis);
+
   const [error, setError] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
   

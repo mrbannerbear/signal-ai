@@ -149,5 +149,5 @@
 }
 
 button, link {
-  cursor: pointer;
+  cursor: pointer !important;
 }

@@ -30,6 +30,7 @@ import {
 import { Job, jobSchema } from "@/schemas/jobs.schema";
 import { createJob } from "@/actions/jobs";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function StructuredForm({
   structuredData,
@@ -88,6 +89,7 @@ export function StructuredForm({
     try {
       const result = await createJob(values);
       if (result.success) {
+        toast.success("Job created successfully! Redirecting...");
         router.push(`/dashboard/jobs/${result.id}`);
       } else {
         if (result.errors) {
@@ -120,7 +122,7 @@ export function StructuredForm({
         </div>
       </div>
 
-      <Card className="flex-1 overflow-y-auto rounded-[2rem] shadow-sm border-muted/50 flex flex-col relative">
+      <Card className="flex-1 overflow-y-auto rounded-xl shadow-sm border-border/40 flex flex-col relative">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -470,10 +472,10 @@ export function StructuredForm({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-14 text-base md:text-lg font-black bg-primary hover:scale-[1.01] active:scale-[0.99] transition-all shadow-2xl shadow-primary/20 rounded-2xl group"
+              className="w-full h-12 text-base font-semibold bg-zinc-900 text-white hover:bg-zinc-800 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-sm rounded-xl group"
             >
-              {isSubmitting ? "Saving..." : "Save & Analyze Match"}
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              {isSubmitting ? "Saving..." : "Save"}
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </form>
         </Form>
