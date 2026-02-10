@@ -3,12 +3,6 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Wand2, Loader2 } from "lucide-react";
 import { formatJobData } from "@/actions/jobFormat";
