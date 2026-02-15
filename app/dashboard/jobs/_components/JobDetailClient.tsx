@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { analyzeJob } from "@/actions/analysis";
-import { updateJob, deleteJob } from "@/actions/jobs";
+import { analyzeJob } from "@/actions/analysis/analysis";
+import { updateJob, deleteJob } from "@/actions/jobs/jobs";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
 import { JobAnalysisOutput } from "@/schemas/job-analysis.schema";

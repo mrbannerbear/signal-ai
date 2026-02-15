@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Settings } from "lucide-react";
-import { getCurrentUser } from "@/actions/account";
+import { getCurrentUser } from "@/actions/account/account";
 import {
   EmailSection,
   PasswordSection,

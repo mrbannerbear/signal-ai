@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Sparkles, Link as LinkIcon } from "lucide-react";
 import { useRef, useState } from "react";
-import { fetchJobTextFromURL } from "@/actions/scraper";
+import { fetchJobTextFromURL } from "@/actions/jobs/scraper";
 import { Job } from "@/schemas/jobs.schema";
 import { toast } from "sonner";
 import { showGracefulError } from "@/components/ui/graceful-toast";

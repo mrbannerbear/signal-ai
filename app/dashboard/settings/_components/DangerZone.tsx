@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
-import { deleteAccount } from "@/actions/account";
+import { deleteAccount } from "@/actions/account/account";
 
 interface DangerZoneProps {
   isOAuthUser: boolean;
