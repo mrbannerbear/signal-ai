@@ -46,6 +46,7 @@ export const signIn = async (data: LoginInput) => {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: error.message };
   revalidatePath("/");
+  
   return { success: true, message: "Successfully signed in." };
 };
 

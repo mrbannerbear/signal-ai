@@ -31,7 +31,7 @@ export default function FitScoreChart({ analyses }: Props) {
         <span className="w-1 h-5 rounded-full bg-emerald-500" />
         Fit Score Distribution
       </h3>
-      <div className="flex-1 w-full min-h-[200px]">
+      <div className="flex-1 w-full min-h-50">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <XAxis 

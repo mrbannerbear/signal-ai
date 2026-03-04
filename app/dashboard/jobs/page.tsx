@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { getAllJobs } from "@/actions/jobs";
+import { getAllJobs } from "@/actions/jobs/jobs";
 import { cn } from "@/app/lib/utils";
 import JobsGrid from "./_components/JobsGrid";
 

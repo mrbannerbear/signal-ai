@@ -26,7 +26,7 @@ import {
   openFile,
 } from "@/utils/parseResume";
 import { ResumeProfile } from "@/schemas/resume.schema";
-import { formatResumeData } from "@/actions/resume";
+import { formatResumeData } from "@/actions/profiles/resume";
 import { showGracefulError } from "@/components/ui/graceful-toast";
 import { toast } from "sonner";
 

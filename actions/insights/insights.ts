@@ -5,14 +5,14 @@ import getUserOnServer from "@/utils/getUserOnServer";
 import { GoogleGenAI } from "@google/genai";
 import { revalidatePath } from "next/cache";
 
-import type { UserInsights, AnalysisSummaryData } from "./insights/types";
-import { mapToAnalysisSummary } from "./insights/mappers";
+import type { UserInsights, AnalysisSummaryData } from "./types";
+import { mapToAnalysisSummary } from "./mappers";
 import {
   computeAnalysisHash,
   deduplicateAndCap,
   safeAverage,
   buildInsightsSummaryPrompt,
-} from "./insights/utils";
+} from "./utils";
 import { getGeminiApiKey } from "@/utils/getEnv";
 
 export async function getAllUserAnalyses(): Promise<{

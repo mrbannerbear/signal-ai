@@ -37,7 +37,7 @@ export default function RiskLevelChart({ analyses }: Props) {
         <span className="w-1 h-5 rounded-full bg-amber-500" />
         Risk Distribution
       </h3>
-      <div className="flex-1 w-full min-h-[200px] relative">
+      <div className="flex-1 w-full min-h-50 relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

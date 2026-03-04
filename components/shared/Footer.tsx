@@ -12,18 +12,6 @@ export function Footer() {
           </span>
         </div>
       </div>
-
-      <nav className="flex gap-6 text-xs text-zinc-500 font-medium">
-        <a href="#" className="hover:text-zinc-900 transition-colors">
-          Privacy
-        </a>
-        <a href="#" className="hover:text-zinc-900 transition-colors">
-          Terms
-        </a>
-        <a href="#" className="hover:text-zinc-900 transition-colors">
-          Help
-        </a>
-      </nav>
     </footer>
   );
 }

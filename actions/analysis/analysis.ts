@@ -2,7 +2,10 @@
 
 import { createClient } from "@/app/lib/supabase/server";
 import { GoogleGenAI } from "@google/genai";
-import { jobAnalysisOutputSchema, type JobAnalysisOutput } from "@/schemas/job-analysis.schema";
+import {
+  jobAnalysisOutputSchema,
+  type JobAnalysisOutput,
+} from "@/schemas/job-analysis.schema";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";
 import { getGeminiApiKey } from "@/utils/getEnv";
@@ -12,42 +15,30 @@ const ANALYSIS_MODEL = "gemini-2.5-flash";
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
 
-class AnalysisError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public details?: unknown
-  ) {
-    super(message);
-    this.name = "AnalysisError";
-  }
-}
-
 async function withRetry<T>(
   fn: () => Promise<T>,
-  retries = MAX_RETRIES
+  retries = MAX_RETRIES,
 ): Promise<T> {
   try {
     return await fn();
   } catch {
-    if (retries === 0) toast.error("Failed to analyze job after multiple attempts.");
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS * (MAX_RETRIES - retries + 1)));
+    if (retries === 0)
+      toast.error("Failed to analyze job after multiple attempts.");
+    await new Promise((resolve) =>
+      setTimeout(resolve, RETRY_DELAY_MS * (MAX_RETRIES - retries + 1)),
+    );
     return withRetry(fn, retries - 1);
   }
 }
 
 function sanitizeInput(input: string | null | undefined): string {
   if (!input) return "Not specified";
-  return input
-    .replace(/```/g, "")
-    .replace(/{{/g, "")
-    .replace(/}}/g, "")
-    .trim();
+  return input.replace(/```/g, "").replace(/{{/g, "").replace(/}}/g, "").trim();
 }
 
 function parseSkills(skills: unknown): string {
   if (!skills) return "Not specified";
-  
+
   try {
     const parsed = typeof skills === "string" ? JSON.parse(skills) : skills;
     if (Array.isArray(parsed)) {
@@ -59,16 +50,16 @@ function parseSkills(skills: unknown): string {
   } catch {
     return typeof skills === "string" ? sanitizeInput(skills) : "Not specified";
   }
-  
+
   return "Not specified";
 }
 
 export async function analyzeJob(
   jobId: string,
-  profileId: string | null
+  profileId: string | null,
 ): Promise<JobAnalysisOutput> {
   if (!jobId) {
-    throw new AnalysisError("Job ID is required", "INVALID_INPUT");
+    throw new Error("Job ID is required");
   }
 
   const supabase = await createClient();
@@ -96,7 +87,7 @@ export async function analyzeJob(
   ]);
 
   if (jobResult.error || !jobResult.data) {
-    throw new AnalysisError("Job not found", "JOB_NOT_FOUND", jobResult.error);
+    throw new Error("Job not found: " + jobResult.error);
   }
 
   const job = jobResult.data;
@@ -116,13 +107,13 @@ export async function analyzeJob(
       contents: fullPrompt,
       config: {
         responseMimeType: "application/json",
-        temperature: 0.3
+        temperature: 0.3,
       },
     });
 
     const text = await response.text;
     if (!text) {
-      throw new AnalysisError("Empty response from AI", "EMPTY_RESPONSE");
+      throw new Error("Empty response from AI");
     }
 
     const parsed = JSON.parse(text);
@@ -133,11 +124,7 @@ export async function analyzeJob(
   const validation = jobAnalysisOutputSchema.safeParse(analysisResult);
   if (!validation.success) {
     console.error("Schema validation failed:", validation.error);
-    throw new AnalysisError(
-      "AI output validation failed",
-      "VALIDATION_ERROR",
-      validation.error.issues
-    );
+    throw new Error("AI output validation failed");
   }
 
   const content = validation.data;
@@ -158,7 +145,7 @@ export async function analyzeJob(
       content,
       ...analyticsData,
     },
-    { onConflict: "job_id,profile_id" }
+    { onConflict: "job_id,profile_id" },
   );
 
   if (upsertError) {
@@ -174,7 +161,7 @@ export async function analyzeJob(
 
 function buildPrompts(
   job: Job,
-  profile: Profile
+  profile: Profile,
 ): { systemPrompt: string; userPrompt: string } {
   const skillsList = parseSkills(profile?.skills);
 
@@ -299,3 +286,18 @@ CRITICAL VALIDATION RULES:
   return { systemPrompt, userPrompt };
 }
 
+export async function getExistingAnalysis(jobId: string, profileId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("analysis")
+    .select("*")
+    .eq("job_id", jobId)
+    .eq("profile_id", profileId)
+    .single();
+
+  if (error) {
+    throw new Error("Error fetching analysis data. Please try again later.");
+  }
+
+  return data;
+}

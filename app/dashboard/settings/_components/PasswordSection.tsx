@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Lock, Loader2, Eye, EyeOff } from "lucide-react";
-import { updatePassword } from "@/actions/account";
+import { updatePassword } from "@/actions/account/account";
 
 interface PasswordSectionProps {
   isOAuthUser: boolean;

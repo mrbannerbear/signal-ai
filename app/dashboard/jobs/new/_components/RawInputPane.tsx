@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Wand2, Loader2 } from "lucide-react";
-import { formatJobData } from "@/actions/jobFormat";
+import { formatJobData } from "@/actions/jobs/jobFormat";
 import { Job } from "@/schemas/jobs.schema";
 import { toast } from "sonner";
 import { showGracefulError } from "@/components/ui/graceful-toast";
