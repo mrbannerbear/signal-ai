@@ -1,7 +1,7 @@
 "use client";
 
 import type { UserInsights, AnalysisSummaryData } from "@/actions/insights/types";
-import { regenerateInsights } from "@/actions/insights";
+import { regenerateInsights } from "@/actions/insights/insights";
 import { useState, useTransition } from "react";
 import { RefreshCw, TrendingUp, Briefcase, AlertTriangle, CheckCircle, XCircle, Sparkles, Plus, ArrowRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";

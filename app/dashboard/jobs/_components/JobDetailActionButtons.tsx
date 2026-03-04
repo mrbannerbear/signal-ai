@@ -1,7 +1,6 @@
 "use client";
 
-import { analyzeJob } from "@/actions/analysis";
-import { getExistingAnalysis } from "@/actions/getAnalysis";
+import { analyzeJob, getExistingAnalysis } from "@/actions/analysis/analysis";
 import { Button } from "@/components/ui/button";
 import { Job } from "@/schemas/jobs.schema";
 import { Profile } from "@/schemas/profiles.schema";

@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { signOut } from "@/actions/account";
+import { signOut } from "@/actions/account/account";
 
 interface SidebarProps {
   isCollapsed: boolean;

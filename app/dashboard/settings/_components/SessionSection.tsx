@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { LogOut, Loader2, Monitor } from "lucide-react";
-import { signOut } from "@/actions/account";
+import { signOut } from "@/actions/account/account";
 
 interface SessionSectionProps {
   provider: string;

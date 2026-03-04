@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
-import { updateEmail } from "@/actions/account";
+import { updateEmail } from "@/actions/account/account";
 
 interface EmailSectionProps {
   currentEmail: string;

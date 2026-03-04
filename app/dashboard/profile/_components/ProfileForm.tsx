@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { Globe, Loader2, MapPin } from "lucide-react";
-import { createProfileAction, updateProfileAction } from "@/actions/profiles";
+import { createProfileAction, updateProfileAction } from "@/actions/profiles/profiles";
 import { useRouter } from "next/navigation";
 import { SkillsSection } from "./SkillSection";
 import { EducationSection } from "./EducationSection";

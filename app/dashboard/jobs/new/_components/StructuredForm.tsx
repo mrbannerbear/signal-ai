@@ -28,7 +28,7 @@ import {
   Plus,
 } from "lucide-react";
 import { Job, jobSchema } from "@/schemas/jobs.schema";
-import { createJob } from "@/actions/jobs";
+import { createJob } from "@/actions/jobs/jobs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
