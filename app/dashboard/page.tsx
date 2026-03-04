@@ -4,7 +4,7 @@ import {
   getUserInsights,
   getAllUserAnalyses,
   regenerateInsights,
-} from "@/actions/insights";
+} from "@/actions/insights/insights";
 import DashboardClient from "./_components/DashboardClient";
 import { redirect } from "next/navigation";
 
