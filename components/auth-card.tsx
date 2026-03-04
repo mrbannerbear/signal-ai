@@ -80,7 +80,7 @@ export default function AuthCard({
         if (mode === "signup") {
           setIsSuccess(true);
         } else {
-          router.push("/");
+          router.push("/dashboard/profile");
         }
       }
     });
@@ -92,6 +92,7 @@ export default function AuthCard({
       if (result?.error) {
         setStatus({ type: "error", message: result.error });
       }
+      router.push("/dashboard/profile")
     });
   };
 
