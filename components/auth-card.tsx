@@ -92,7 +92,6 @@ export default function AuthCard({
       if (result?.error) {
         setStatus({ type: "error", message: result.error });
       }
-      router.push("/dashboard/profile")
     });
   };
 

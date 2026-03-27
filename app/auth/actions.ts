@@ -8,7 +8,38 @@ import {
   signupSchema,
 } from "@/schemas/auth.schema";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+const normalizeBaseUrl = (url: string) => url.replace(/\/$/, "");
+
+const getBaseUrl = async () => {
+  const headerStore = await headers();
+  const origin = headerStore.get("origin");
+
+  if (origin) {
+    return normalizeBaseUrl(origin);
+  }
+
+  const forwardedHost =
+    headerStore.get("x-forwarded-host") || headerStore.get("host");
+  if (forwardedHost) {
+    const protocol =
+      headerStore.get("x-forwarded-proto") ||
+      (forwardedHost.includes("localhost") ? "http" : "https");
+    return `${protocol}://${forwardedHost}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return normalizeBaseUrl(process.env.NEXT_PUBLIC_BASE_URL);
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return "http://localhost:3000";
+};
 
 const validateAuthData = (
   type: "login" | "signup",
@@ -44,7 +75,15 @@ export const signIn = async (data: LoginInput) => {
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.message.toLowerCase().includes("invalid login credentials")) {
+      return {
+        error:
+          "Invalid login credentials. If this account was created with Google, use Google sign-in or set a password from Settings after signing in with Google.",
+      };
+    }
+    return { error: error.message };
+  }
   revalidatePath("/");
   
   return { success: true, message: "Successfully signed in." };
@@ -60,13 +99,14 @@ export const signUp = async (data: SignupInput) => {
   }
 
   const { email, password } = validatedData;
+  const baseUrl = await getBaseUrl();
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+      emailRedirectTo: `${baseUrl}/`,
     },
   });
   if (error) return { error: error.message };
@@ -78,11 +118,12 @@ export const signUp = async (data: SignupInput) => {
 
 export const googleAuth = async () => {
   const supabase = await createClient();
+  const baseUrl = await getBaseUrl();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/callback`,
     },
   });
 
