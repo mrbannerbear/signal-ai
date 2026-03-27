@@ -25,7 +25,9 @@ export default function PasswordSection({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentPassword || !newPassword || !confirmPassword) return;
+    if ((!isOAuthUser && !currentPassword) || !newPassword || !confirmPassword) {
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setMessage({ type: "error", text: "New passwords don't match" });
@@ -37,7 +39,7 @@ export default function PasswordSection({
 
     try {
       const result = await updatePassword({
-        currentPassword,
+        currentPassword: isOAuthUser ? undefined : currentPassword,
         newPassword,
         confirmPassword,
       });
@@ -66,15 +68,15 @@ export default function PasswordSection({
         <h2 className="text-lg font-semibold">Password</h2>
       </div>
 
-      {isOAuthUser ? (
-        <div className="rounded-lg bg-muted/50 p-4 text-sm text-muted-foreground">
-          <p>
-            You signed in with <span className="font-medium capitalize">{provider}</span>.
-            Password management is handled by your OAuth provider.
-          </p>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {isOAuthUser ? (
+          <div className="rounded-lg bg-muted/50 p-4 text-sm text-muted-foreground">
+            <p>
+              You signed in with <span className="font-medium capitalize">{provider}</span>.
+              You can set a password here to also sign in with email/password.
+            </p>
+          </div>
+        ) : (
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
               Current Password
@@ -101,10 +103,11 @@ export default function PasswordSection({
               </button>
             </div>
           </div>
+        )}
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              New Password
+              {isOAuthUser ? "Set Password" : "New Password"}
             </label>
             <input
               type={showPasswords ? "text" : "password"}
@@ -147,14 +150,22 @@ export default function PasswordSection({
 
           <button
             type="submit"
-            disabled={isLoading || !currentPassword || !newPassword || !confirmPassword}
+            disabled={
+              isLoading ||
+              (!isOAuthUser && !currentPassword) ||
+              !newPassword ||
+              !confirmPassword
+            }
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            {isLoading ? "Updating..." : "Update Password"}
+            {isLoading
+              ? "Updating..."
+              : isOAuthUser
+                ? "Set Password"
+                : "Update Password"}
           </button>
-        </form>
-      )}
+      </form>
     </div>
   );
 }

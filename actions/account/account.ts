@@ -112,11 +112,34 @@ export const updatePassword = async (
     };
   }
 
-  // Check if user is OAuth user
-  if (user.app_metadata?.provider && user.app_metadata.provider !== "email") {
+  const isOAuthUser =
+    !!user.app_metadata?.provider && user.app_metadata.provider !== "email";
+
+  if (isOAuthUser) {
+    const { error } = await supabase.auth.updateUser({
+      password: validation.data.newPassword,
+    });
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    revalidatePath("/dashboard/settings");
+
+    return {
+      success: true,
+      message:
+        "Password set successfully. You can now sign in with email/password too.",
+    };
+  }
+
+  if (!validation.data.currentPassword) {
     return {
       success: false,
-      message: `You signed up with ${user.app_metadata.provider}. Password cannot be changed.`,
+      message: "Current password is required.",
     };
   }
 
