@@ -13,8 +13,10 @@ export async function GET(request: Request) {
     code: searchParams.get('code') || '',
     next: searchParams.get('next') || undefined,
   })
+  console.log("hello")
   if (code) {
     const supabase = await createClient()
+    console.log("origin", origin)
     
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
